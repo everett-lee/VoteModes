@@ -30,7 +30,7 @@ def download_active_mp_list() -> None:
 
     print(len(members_with_id_and_name))
 
-    with open('./raw/rawMPList', 'w') as raw_json:
+    with open('../raw/rawMPList', 'w') as raw_json:
         raw_json.write('{"Data": ')
         raw_json.write(json.dumps(members_with_id_and_name))
         raw_json.write('}')

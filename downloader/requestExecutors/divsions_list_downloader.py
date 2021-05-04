@@ -38,7 +38,7 @@ def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
 
 
 def download_divisions_list() -> None:
-    with open('./raw/rawDivisions', 'a') as rawJSon:
+    with open('../raw/rawDivisions', 'a') as rawJSon:
         rawJSon.write('{"Data": ')
 
     divisions = []
@@ -57,6 +57,6 @@ def download_divisions_list() -> None:
         divisions += [get_fields_of_interest(div) for div in json.loads(second_third.text)]
         divisions += [get_fields_of_interest(div) for div in json.loads(third_third.text)]
 
-    with open('./raw/rawDivisions', 'a') as rawJSon:
+    with open('../raw/rawDivisions', 'a') as rawJSon:
         rawJSon.write(json.dumps(divisions))
         rawJSon.write('}')
