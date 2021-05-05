@@ -32,7 +32,7 @@ def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
 
     third_open = '{year}-{month}-21'.format(year=year, month=month_to_str(month))
     third_close = '{year}-{month}-01'.format(year=year, month=month_to_str(month + 1)) if month < 12 \
-        else '{year}-12-31'
+        else '{year}-12-31'.format(year=year)
 
     return [(first_open, first_close), (second_open, second_close), (third_open, third_close)]
 
@@ -42,6 +42,8 @@ def download_divisions_list() -> None:
         rawJSon.write('{"Data": ')
 
     divisions = []
+
+    # TODO: start Dec 2019
 
     for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
         first_interval, second_interval, third_interval = get_date_intervals(2020, month)

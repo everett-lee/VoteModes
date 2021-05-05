@@ -5,7 +5,7 @@ import codecs
 
 URL_GET_MPS_BASE = 'http://data.parliament.uk/membersdataplatform/services/mnis/members/'
 URL_GET_MPS_QUERY = 'query/House=Commons%7CIsEligible=true%7Ccommonsmemberbetween={start_date}and{end_date}/'
-START_DATE = '2020-01-01'
+START_DATE = '2019-12-12'
 END_DATE = '2021-05-03'
 
 def get_fields_of_interest(mp: dict) -> dict:
@@ -27,8 +27,6 @@ def download_active_mp_list() -> None:
 
     all_members = parsed_json['Members']['Member']
     members_with_id_and_name = [get_fields_of_interest(mp) for mp in all_members]
-
-    print(len(members_with_id_and_name))
 
     with open('../raw/rawMPList', 'w') as raw_json:
         raw_json.write('{"Data": ')

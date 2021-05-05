@@ -5,11 +5,15 @@ TOTAL_MPS = 650
 URL_GET_DIVISION = 'https://commonsvotes-api.parliament.uk/data/division/'
 
 
-def get_division_votes_and_id(division: dict, mp_list: set) -> dict:
+def get_division_votes_and_id(division: dict, mp_ids: set) -> dict:
     ayes = set(map(lambda x: x['MemberId'], division['Ayes']))
     noes = set(map(lambda x: x['MemberId'], division['Noes']))
 
-    no_attend = mp_list.difference(ayes.union(noes))
+    print(ayes)
+    print(noes)
+    print(mp_ids)
+    no_attend = mp_ids.difference(ayes.union(noes))
+
     # TODO UNIT TEST THIS
 
     return {
@@ -30,7 +34,7 @@ def download_votes_per_division() -> None:
 
     with open('raw/rawMPList', 'r') as raw_mps:
         mp_list = json.loads(raw_mps.read())['Data']
-        mp_ids = [mp['MemberId'] for mp in mp_list]
+        mp_ids = [int(mp['MemberId']) for mp in mp_list]
 
     with open('raw/rawDivisions', 'r') as raw_divisions:
         divisions = raw_divisions.read()
@@ -45,4 +49,4 @@ def download_votes_per_division() -> None:
             raw_json = json.loads(requests.get(url).text)
             division_with_votes = get_division_votes_and_id(raw_json, set(mp_ids))
 
-            print(division_with_votes)
+            # print(division_with_votes)
