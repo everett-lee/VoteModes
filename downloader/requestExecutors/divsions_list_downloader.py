@@ -38,15 +38,14 @@ def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
 
 
 def download_divisions_list() -> None:
-    with open('../raw/rawDivisions', 'a') as rawJSon:
+    with open('raw/rawDivisions2021', 'a') as rawJSon:
         rawJSon.write('{"Data": ')
 
     divisions = []
 
-    # TODO: start Dec 2019
-
-    for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
-        first_interval, second_interval, third_interval = get_date_intervals(2020, month)
+    #for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+    for month in [1, 2, 3, 4]:
+        first_interval, second_interval, third_interval = get_date_intervals(2021, month)
 
         first_params = {'queryParameters.startDate': first_interval[0], 'queryParameters.endDate': first_interval[1]}
         first_third = requests.get(URL_SEARCH_DIVISIONS, first_params)
@@ -59,6 +58,6 @@ def download_divisions_list() -> None:
         divisions += [get_fields_of_interest(div) for div in json.loads(second_third.text)]
         divisions += [get_fields_of_interest(div) for div in json.loads(third_third.text)]
 
-    with open('../raw/rawDivisions', 'a') as rawJSon:
+    with open('raw/rawDivisions2021', 'a') as rawJSon:
         rawJSon.write(json.dumps(divisions))
         rawJSon.write('}')

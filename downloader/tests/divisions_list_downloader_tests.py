@@ -3,7 +3,7 @@ from ..requestExecutors.divsions_list_downloader import get_date_intervals
 from unittest import TestCase
 
 
-class Test(TestCase):
+class TestGetDateIntervals(TestCase):
     def test_jan_interval_has_correct_range(self):
         interval = get_date_intervals(1999, 1)
         self.assertEqual(interval[0][0], '1999-01-01')
