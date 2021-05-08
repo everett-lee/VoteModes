@@ -18,22 +18,28 @@ def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
 
     return {
         'DivisionId': division['DivisionId'],
-        'Ayes': ayes,
-        'Noes': noes,
-        'DidNotAttend': no_attend,
+        'Ayes': list(ayes),
+        'Noes': list(noes),
+        'DidNotAttend': list(no_attend),
     }
 
 
 def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
     url = '{base_url}{division_id}.json'.format(base_url=URL_GET_DIVISION, division_id=division_id)
-    error_count = 0
+    failed_count = 0
 
-    while not res or (error_count < 10 and res.status_code != 200):
+    print('downloading division with id', division_id)
+
+    res = requests.get(url)
+    while failed_count <= 10 and res.status_code != 200:
+        failed_count += 1
         res = requests.get(url)
-        error_count += 1
 
-    if error_count == 10:
-        None
+    if failed_count >= 10:
+        return {
+            'last_failure_code': res.status_code,
+            'times_called': failed_count
+        }
         # TODO LOG ERROR FETCHING
 
     raw_json = json.loads(res.text)
@@ -84,8 +90,7 @@ def download_votes_per_division() -> None:
 
         with_good_attendance = with_good_attendance + [div for div in parsed_json if has_good_attendance(div)]
 
-    # download_all_divisions_with_votes_sync => 10591 ms = 20 downloads
-    divisions_with_votes = download_all_divisions_with_votes_sync(with_good_attendance[0:20], mp_ids)
+    divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
 
     print(len(with_good_attendance))
     print(len(divisions_with_votes))
@@ -93,6 +98,5 @@ def download_votes_per_division() -> None:
 
     with open('raw/rawMPWithVotes', 'w') as raw_mp_with_votes:
         raw_mp_with_votes.write('{"Data": ')
-        print(divisions_with_votes)
-
+        raw_mp_with_votes.write(json.dumps(divisions_with_votes))
         raw_mp_with_votes.write('}')

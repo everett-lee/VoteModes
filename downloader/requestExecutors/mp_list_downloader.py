@@ -1,5 +1,4 @@
 import json
-
 import requests
 
 URL_GET_MPS_BASE = 'http://data.parliament.uk/membersdataplatform/services/mnis/members/'
@@ -7,11 +6,13 @@ URL_GET_MPS_QUERY = 'query/House=Commons%7CIsEligible=true%7Ccommonsmemberbetwee
 START_DATE = '2019-12-12'
 END_DATE = '2021-05-03'
 
+
 def get_fields_of_interest(mp: dict) -> dict:
     return {
         'MemberId': mp['@Member_Id'],
         'Name': mp['DisplayAs']
     }
+
 
 def download_active_mp_list() -> None:
     full_url = URL_GET_MPS_BASE + URL_GET_MPS_QUERY.format(start_date=START_DATE, end_date=END_DATE)
