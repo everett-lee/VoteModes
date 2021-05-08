@@ -9,7 +9,7 @@ END_DATE = '2021-05-03'
 
 def get_fields_of_interest(mp: dict) -> dict:
     return {
-        'MemberId': mp['@Member_Id'],
+        'MemberId': int(mp['@Member_Id']),
         'Name': mp['DisplayAs']
     }
 

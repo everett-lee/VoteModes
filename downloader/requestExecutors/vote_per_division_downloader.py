@@ -1,4 +1,5 @@
 import concurrent
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
@@ -17,7 +18,7 @@ def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
     no_attend = mp_ids.difference(ayes.union(noes))
 
     return {
-        'DivisionId': division['DivisionId'],
+        'DivisionId': int(division['DivisionId']),
         'Ayes': list(ayes),
         'Noes': list(noes),
         'DidNotAttend': list(no_attend),
@@ -73,6 +74,7 @@ def download_votes_per_division() -> None:
     mp_ids = []
     with_good_attendance = []
     divisions_with_votes = []
+    mps_to_votes = defaultdict(dict)
 
     with open('raw/rawMPList', 'r') as raw_mps:
         mp_list = json.loads(raw_mps.read())['Data']
@@ -90,13 +92,28 @@ def download_votes_per_division() -> None:
 
         with_good_attendance = with_good_attendance + [div for div in parsed_json if has_good_attendance(div)]
 
-    divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
+    # divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
 
-    print(len(with_good_attendance))
-    print(len(divisions_with_votes))
-    assert (len(with_good_attendance) == len(divisions_with_votes))
+    # print(len(with_good_attendance))
+    # print(len(divisions_with_votes))
+    # assert (len(with_good_attendance) == len(divisions_with_votes))
 
-    with open('raw/rawMPWithVotes', 'w') as raw_mp_with_votes:
-        raw_mp_with_votes.write('{"Data": ')
-        raw_mp_with_votes.write(json.dumps(divisions_with_votes))
-        raw_mp_with_votes.write('}')
+    with open('raw/rawDivisionsWithVotes', 'r') as raw_divisions_with_votes:
+        divisions_with_votes = json.load(raw_divisions_with_votes)['Data']
+
+        for division in divisions_with_votes:
+            division_id = int(division['DivisionId'])
+            for aye_voter_id in division['Ayes']:
+                mps_to_votes[int(aye_voter_id)][division_id] = 'Aye'
+            for no_voted_id in division['Noes']:
+                mps_to_votes[int(no_voted_id)][division_id] = 'No'
+            for no_attend_id in division['DidNotAttend']:
+                mps_to_votes[int(no_attend_id)][division_id] = 'NoAttend'
+
+    # only include mps recorded in the database
+    with_recorded_mps = {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}
+
+    with open('raw/rawMPsToVotes', 'w') as raw_mps_to_votes:
+        raw_mps_to_votes.write('{"Data": ')
+        raw_mps_to_votes.write(json.dumps(with_recorded_mps))
+        raw_mps_to_votes.write('}')
