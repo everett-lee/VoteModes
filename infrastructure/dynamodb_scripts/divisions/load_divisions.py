@@ -9,34 +9,13 @@ dynamodb_resource = None
 if (AWS_PROFILE == 'localstack'):
     dynamodb_resource = boto3.session.Session(profile_name='localstack').resource('dynamodb',
                                                                                   endpoint_url='http://localhost:4566')
-    dynamodb_client = sqs = boto3.session.Session(profile_name='localstack').client('dynamodb',
-                                                                                    endpoint_url="http://localhost:4566")
+
 else:
     print("AWS profile: {profile} is not valid".format(profile=AWS_PROFILE))
 
 
 def put_data():
-    with open('../downloader/raw/rawDivisions2019-2020', 'r') as raw_2019_2020:
-        divisions = json.load(raw_2019_2020)['Data']
-
-        for division in divisions:
-            division_id = division['DivisionId']
-            date = division['Date'].strip()
-            title = division['Title'].strip()
-            aye_count = division['AyeCount']
-            no_count = division['NoCount']
-
-            table.put_item(
-                Item={
-                    'DivisionId': division_id,
-                    'VoteDate': date,
-                    'Title': title,
-                    'AyeCount': aye_count,
-                    'NoCount': no_count,
-                }
-            )
-
-    with open('../downloader/raw/rawDivisions2021', 'r') as raw_2019_2020:
+    with open('../downloader/raw/rawDivisions', 'r') as raw_2019_2020:
         divisions = json.load(raw_2019_2020)['Data']
 
         for division in divisions:
@@ -77,35 +56,6 @@ if dynamodb_resource:
                 'ReadCapacityUnits': 5,
                 'WriteCapacityUnits': 5
             }
-        )
-
-        dynamodb_client.update_table(
-            TableName=TABLE_NAME,
-            AttributeDefinitions=[{'AttributeName': 'VoteDate', 'AttributeType': 'S'},
-                                  {'AttributeName': 'DivisionId', 'AttributeType': 'N'}],
-            GlobalSecondaryIndexUpdates=[
-                {
-                    'Create': {
-                        'IndexName': 'Divisions2019ByDate',
-                        'KeySchema': [
-                            {
-                                'AttributeName': 'VoteDate',
-                                'KeyType': 'HASH'
-                            }
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'INCLUDE',
-                            'NonKeyAttributes': [
-                                'DivisionId',
-                            ]
-                        },
-                        'ProvisionedThroughput': {
-                            'ReadCapacityUnits': 5,
-                            'WriteCapacityUnits': 5
-                        }
-                    }
-                }
-            ]
         )
 
         put_data()

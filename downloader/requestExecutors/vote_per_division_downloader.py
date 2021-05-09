@@ -80,35 +80,31 @@ def download_votes_per_division() -> None:
         mp_list = json.loads(raw_mps.read())['Data']
         mp_ids = set([int(mp['MemberId']) for mp in mp_list])
 
-    with open('raw/rawDivisions2019-2020', 'r') as raw_divisions:
+    with open('raw/rawDivisions', 'r') as raw_divisions:
         divisions = raw_divisions.read()
         parsed_json = json.loads(divisions)['Data']
 
         with_good_attendance = with_good_attendance + [div for div in parsed_json if has_good_attendance(div)]
 
-    with open('raw/rawDivisions2021', 'r') as raw_divisions:
-        divisions = raw_divisions.read()
-        parsed_json = json.loads(divisions)['Data']
+    divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
 
-        with_good_attendance = with_good_attendance + [div for div in parsed_json if has_good_attendance(div)]
+    print(len(with_good_attendance))
+    print(len(divisions_with_votes))
+    assert (len(with_good_attendance) == len(divisions_with_votes))
 
-    # divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
+    with open('raw/rawDivisionsWithVotes', 'w') as raw_divisions_with_votes:
+        raw_divisions.write('{"Data": ')
+        raw_divisions.write(json.dumps(divisions_with_votes))
+        raw_divisions.write('}')
 
-    # print(len(with_good_attendance))
-    # print(len(divisions_with_votes))
-    # assert (len(with_good_attendance) == len(divisions_with_votes))
-
-    with open('raw/rawDivisionsWithVotes', 'r') as raw_divisions_with_votes:
-        divisions_with_votes = json.load(raw_divisions_with_votes)['Data']
-
-        for division in divisions_with_votes:
-            division_id = int(division['DivisionId'])
-            for aye_voter_id in division['Ayes']:
-                mps_to_votes[int(aye_voter_id)][division_id] = 'Aye'
-            for no_voted_id in division['Noes']:
-                mps_to_votes[int(no_voted_id)][division_id] = 'No'
-            for no_attend_id in division['DidNotAttend']:
-                mps_to_votes[int(no_attend_id)][division_id] = 'NoAttend'
+    for division in divisions_with_votes:
+        division_id = int(division['DivisionId'])
+        for aye_voter_id in division['Ayes']:
+            mps_to_votes[int(aye_voter_id)][division_id] = 'Aye'
+        for no_voted_id in division['Noes']:
+            mps_to_votes[int(no_voted_id)][division_id] = 'No'
+        for no_attend_id in division['DidNotAttend']:
+            mps_to_votes[int(no_attend_id)][division_id] = 'NoAttend'
 
     # only include mps recorded in the database
     with_recorded_mps = {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}
