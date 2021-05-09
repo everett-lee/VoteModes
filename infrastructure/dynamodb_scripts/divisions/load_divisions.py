@@ -4,11 +4,13 @@ import os
 
 AWS_PROFILE = os.getenv('AWS_PROFILE')
 TABLE_NAME = 'Divisions2019'
-dynamodb = None
+dynamodb_resource = None
 
 if (AWS_PROFILE == 'localstack'):
-    dynamodb = boto3.session.Session(profile_name='localstack').resource('dynamodb',
-                                                                         endpoint_url='http://localhost:4566')
+    dynamodb_resource = boto3.session.Session(profile_name='localstack').resource('dynamodb',
+                                                                                  endpoint_url='http://localhost:4566')
+    dynamodb_client = sqs = boto3.session.Session(profile_name='localstack').client('dynamodb',
+                                                                                    endpoint_url="http://localhost:4566")
 else:
     print("AWS profile: {profile} is not valid".format(profile=AWS_PROFILE))
 
@@ -27,7 +29,7 @@ def put_data():
             table.put_item(
                 Item={
                     'DivisionId': division_id,
-                    'Date': date,
+                    'VoteDate': date,
                     'Title': title,
                     'AyeCount': aye_count,
                     'NoCount': no_count,
@@ -47,7 +49,7 @@ def put_data():
             table.put_item(
                 Item={
                     'DivisionId': division_id,
-                    'Date': date,
+                    'VoteDate': date,
                     'Title': title,
                     'AyeCount': aye_count,
                     'NoCount': no_count,
@@ -55,34 +57,55 @@ def put_data():
             )
 
 
-if dynamodb:
+if dynamodb_resource:
     try:
-        table = dynamodb.create_table(
+        table = dynamodb_resource.create_table(
             TableName=TABLE_NAME,
             KeySchema=[
                 {
                     'AttributeName': 'DivisionId',
                     'KeyType': 'HASH'
-                },
-                {
-                    'AttributeName': 'Date',
-                    'KeyType': 'RANGE'
                 }
             ],
             AttributeDefinitions=[
                 {
                     'AttributeName': 'DivisionId',
                     'AttributeType': 'N'
-                },
-                {
-                    'AttributeName': 'Date',
-                    'AttributeType': 'S'
-                },
+                }
             ],
             ProvisionedThroughput={
                 'ReadCapacityUnits': 5,
                 'WriteCapacityUnits': 5
             }
+        )
+
+        dynamodb_client.update_table(
+            TableName=TABLE_NAME,
+            AttributeDefinitions=[{'AttributeName': 'VoteDate', 'AttributeType': 'S'},
+                                  {'AttributeName': 'DivisionId', 'AttributeType': 'N'}],
+            GlobalSecondaryIndexUpdates=[
+                {
+                    'Create': {
+                        'IndexName': 'Divisions2019ByDate',
+                        'KeySchema': [
+                            {
+                                'AttributeName': 'VoteDate',
+                                'KeyType': 'HASH'
+                            }
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'INCLUDE',
+                            'NonKeyAttributes': [
+                                'DivisionId',
+                            ]
+                        },
+                        'ProvisionedThroughput': {
+                            'ReadCapacityUnits': 5,
+                            'WriteCapacityUnits': 5
+                        }
+                    }
+                }
+            ]
         )
 
         put_data()

@@ -1,8 +1,10 @@
 import requests
 import json
-from typing import Tuple, List
+from typing import Tuple, List, Dict
+from .boto3Helpers.client_wrapper import get_table
 
 URL_SEARCH_DIVISIONS = 'https://commonsvotes-api.parliament.uk/data/divisions.json/search'
+TABLE_NAME = 'Divisions2019'
 
 
 def get_fields_of_interest(division: dict) -> dict:
@@ -13,6 +15,7 @@ def get_fields_of_interest(division: dict) -> dict:
         'AyeCount': division['AyeCount'],
         'NoCount': division['NoCount']
     }
+
 
 # Split the month into three intervals so as not to exceed the maximum number of results
 # per request
@@ -36,28 +39,60 @@ def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
 
     return [(first_open, first_close), (second_open, second_close), (third_open, third_close)]
 
+def get_divisions(first_interval: Tuple[str, str], second_interval: Tuple[str, str],
+                  third_interval: Tuple[str, str]) -> List[Dict]:
+    divisions = []
 
-def download_divisions_list() -> None:
+    first_params = {'queryParameters.startDate': first_interval[0], 'queryParameters.endDate': first_interval[1]}
+    first_third = requests.get(URL_SEARCH_DIVISIONS, first_params)
+    second_params = {'queryParameters.startDate': second_interval[0], 'queryParameters.endDate': second_interval[1]}
+    second_third = requests.get(URL_SEARCH_DIVISIONS, second_params)
+    third_params = {'queryParameters.startDate': third_interval[0], 'queryParameters.endDate': third_interval[1]}
+    third_third = requests.get(URL_SEARCH_DIVISIONS, third_params)
+
+    divisions += [get_fields_of_interest(div) for div in json.loads(first_third.text)]
+    divisions += [get_fields_of_interest(div) for div in json.loads(second_third.text)]
+    divisions += [get_fields_of_interest(div) for div in json.loads(third_third.text)]
+
+    return divisions
+
+def download_divisions_list_file_based() -> None:
     with open('raw/rawDivisions2021', 'a') as rawJSon:
         rawJSon.write('{"Data": ')
 
     divisions = []
 
-    #for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+    # for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
     for month in [1, 2, 3, 4]:
         first_interval, second_interval, third_interval = get_date_intervals(2021, month)
 
-        first_params = {'queryParameters.startDate': first_interval[0], 'queryParameters.endDate': first_interval[1]}
-        first_third = requests.get(URL_SEARCH_DIVISIONS, first_params)
-        second_params = {'queryParameters.startDate': second_interval[0], 'queryParameters.endDate': second_interval[1]}
-        second_third = requests.get(URL_SEARCH_DIVISIONS, second_params)
-        third_params = {'queryParameters.startDate': third_interval[0], 'queryParameters.endDate': third_interval[1]}
-        third_third = requests.get(URL_SEARCH_DIVISIONS, third_params)
-
-        divisions += [get_fields_of_interest(div) for div in json.loads(first_third.text)]
-        divisions += [get_fields_of_interest(div) for div in json.loads(second_third.text)]
-        divisions += [get_fields_of_interest(div) for div in json.loads(third_third.text)]
+        divisions += get_divisions(first_interval, second_interval, third_interval)
 
     with open('raw/rawDivisions2021', 'a') as rawJSon:
         rawJSon.write(json.dumps(divisions))
         rawJSon.write('}')
+
+
+def download_divisions_list(month: int) -> None:
+    first_interval, second_interval, third_interval = get_date_intervals(2021, month)
+
+    divisions = get_divisions(first_interval, second_interval, third_interval)
+
+    table = get_table(TABLE_NAME)
+
+    for division in divisions:
+        division_id = division['DivisionId']
+        date = division['Date'].strip()
+        title = division['Title'].strip()
+        aye_count = division['AyeCount']
+        no_count = division['NoCount']
+
+        table.put_item(
+            Item={
+                'DivisionId': division_id,
+                'VoteDate': date,
+                'Title': title,
+                'AyeCount': aye_count,
+                'NoCount': no_count,
+            }
+        )
