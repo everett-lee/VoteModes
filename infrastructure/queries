@@ -4,13 +4,21 @@ aws dynamodb scan \
      --expression-attribute-values '{":start_date":{"S":"2020-04-01"}}'  --endpoint-url http://localhost:4566 
      
 aws dynamodb scan \
-	--table-name Mps \
-	--projection-expression "MemberId" \
+	--table-name MPs \
+	--projection-expression "Data" \
 	 --endpoint-url http://localhost:4566
 
 aws dynamodb query \
     --table-name Divisions \
     --key-condition-expression 'DivisionElectionYear = :election_year AND DivisionDate > :start_date' \
     --expression-attribute-values '{":election_year": {"N": "2019"}, ":start_date": {"S": "2021-01-01"}}' \
+    --endpoint-url http://localhost:4566
+
+
+
+aws dynamodb query \
+    --table-name MPs \
+    --key-condition-expression 'MPElectionYear = :election_year' \
+    --expression-attribute-values '{":election_year": {"N": "2019"}}' \
     --endpoint-url http://localhost:4566
 

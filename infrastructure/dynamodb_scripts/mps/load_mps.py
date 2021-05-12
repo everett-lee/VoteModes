@@ -15,18 +15,18 @@ else:
 def put_data():
     with open('../downloader/raw/rawMPList', 'r') as rawMps:
         mps = json.load(rawMps)['Data']
+        mp_dict = {}
 
         for mp in mps:
+            mp['Votes'] = {}
+            mp_dict[str(mp["MemberId"])] = mp
 
-            mp_id = mp['MemberId']
-            name = mp['Name']
-
-            table.put_item(
-                Item={
-                    'MemberId': mp_id,
-                    'Name': name,
-                }
-            )
+        table.put_item(
+            Item={
+                'MPElectionYear': 2019,
+                'MPData': mp_dict,
+            }
+        )
 
 if dynamodb:
     try:
@@ -34,23 +34,15 @@ if dynamodb:
             TableName=TABLE_NAME,
             KeySchema=[
                 {
-                    'AttributeName': 'MemberId',
+                    'AttributeName': 'MPElectionYear',
                     'KeyType': 'HASH'
-                },
-                {
-                    'AttributeName': 'Name',
-                    'KeyType': 'RANGE'
                 }
             ],
             AttributeDefinitions=[
                 {
-                    'AttributeName': 'MemberId',
+                    'AttributeName': 'MPElectionYear',
                     'AttributeType': 'N'
-                },
-                {
-                    'AttributeName': 'Name',
-                    'AttributeType': 'S'
-                },
+                }
             ],
             ProvisionedThroughput={
                 'ReadCapacityUnits': 5,
