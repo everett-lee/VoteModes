@@ -2,3 +2,8 @@ aws dynamodb scan \
      --table-name Divisions2019 \
      --filter-expression "VoteDate > :start_date" \
      --expression-attribute-values '{":start_date":{"S":"2020-04-01"}}'  --endpoint-url http://localhost:4566 
+     
+	aws dynamodb scan \
+	     --table-name MPs2019 \
+	     --projection-expression "MemberId" \
+	     --endpoint-url http://localhost:4566  

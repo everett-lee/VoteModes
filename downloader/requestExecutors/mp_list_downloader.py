@@ -3,7 +3,7 @@ import requests
 
 URL_GET_MPS_BASE = 'http://data.parliament.uk/membersdataplatform/services/mnis/members/'
 URL_GET_MPS_QUERY = 'query/House=Commons%7CIsEligible=true%7Ccommonsmemberbetween={start_date}and{end_date}/'
-START_DATE = '2019-12-12'
+START_DATE = '2019-12-15'
 END_DATE = '2021-05-03'
 
 

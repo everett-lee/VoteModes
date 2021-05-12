@@ -6,6 +6,7 @@ import requests
 import json
 from typing import List, Set, Dict
 
+from .boto3Helpers.client_wrapper import get_table
 from .multithreaded.time_it import timeit
 
 TOTAL_MPS = 650
@@ -66,36 +67,8 @@ def download_all_divisions_with_votes_async(with_good_attendance: List[Dict], mp
 
     return results
 
-
-def download_votes_per_division() -> None:
-    def has_good_attendance(division: dict) -> dict:
-        return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
-
-    mp_ids = []
-    with_good_attendance = []
-    divisions_with_votes = []
+def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Set[int]) -> Dict:
     mps_to_votes = defaultdict(dict)
-
-    with open('raw/rawMPList', 'r') as raw_mps:
-        mp_list = json.loads(raw_mps.read())['Data']
-        mp_ids = set([int(mp['MemberId']) for mp in mp_list])
-
-    with open('raw/rawDivisions', 'r') as raw_divisions:
-        divisions = raw_divisions.read()
-        parsed_json = json.loads(divisions)['Data']
-
-        with_good_attendance = with_good_attendance + [div for div in parsed_json if has_good_attendance(div)]
-
-    divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
-
-    print(len(with_good_attendance))
-    print(len(divisions_with_votes))
-    assert (len(with_good_attendance) == len(divisions_with_votes))
-
-    with open('raw/rawDivisionsWithVotes', 'w') as raw_divisions_with_votes:
-        raw_divisions.write('{"Data": ')
-        raw_divisions.write(json.dumps(divisions_with_votes))
-        raw_divisions.write('}')
 
     for division in divisions_with_votes:
         division_id = int(division['DivisionId'])
@@ -107,9 +80,75 @@ def download_votes_per_division() -> None:
             mps_to_votes[int(no_attend_id)][division_id] = 'NoAttend'
 
     # only include mps recorded in the database
-    with_recorded_mps = {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}
+    return {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}
+
+
+def download_votes_per_division_file_based() -> None:
+    def has_good_attendance(division: dict) -> dict:
+        return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
+
+    mp_ids = []
+    with_good_attendance = []
+    divisions_with_votes = []
+
+
+    with open('raw/rawMPList', 'r') as raw_mps:
+        mp_list = json.loads(raw_mps.read())['Data']
+        mp_ids = set([int(mp['MemberId']) for mp in mp_list])
+
+    with open('raw/rawDivisions', 'r') as raw_divisions:
+        divisions = raw_divisions.read()
+        parsed_json = json.loads(divisions)['Data']
+
+        with_good_attendance = [div for div in parsed_json if has_good_attendance(div)]
+
+    divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
+
+    assert (len(with_good_attendance) == len(divisions_with_votes))
+
+    with open('raw/rawDivisionsWithVotes', 'w') as raw_divisions_with_votes:
+        raw_divisions_with_votes.write('{"Data": ')
+        raw_divisions_with_votes.write(json.dumps(divisions_with_votes))
+        raw_divisions_with_votes.write('}')
+
+    mps_to_votes = map_divisions_with_votes_to_mps(divisions_with_votes, mp_ids)
 
     with open('raw/rawMPsToVotes', 'w') as raw_mps_to_votes:
         raw_mps_to_votes.write('{"Data": ')
-        raw_mps_to_votes.write(json.dumps(with_recorded_mps))
+        raw_mps_to_votes.write(json.dumps(mps_to_votes))
         raw_mps_to_votes.write('}')
+
+
+def get_mp_ids() -> Set[int]:
+    mps_table = get_table('MPs2019')
+
+    dynamodb_mp_ids = mps_table.scan(
+        ProjectionExpression='MemberId',
+    )['Items']
+
+    if not dynamodb_mp_ids:
+        None # TODO log error
+
+    return set(map(lambda x: int(x['MemberId']), dynamodb_mp_ids))
+
+
+def download_votes_per_division(divisions: List[Dict]) -> None:
+    def has_good_attendance(division: dict) -> dict:
+        return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
+
+    with_good_attendance = []
+    divisions_with_votes = []
+
+    # TODO Create the integration tests
+
+    mp_ids = get_mp_ids()
+
+    with_good_attendance = [div for div in divisions if has_good_attendance(div)]
+
+    divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
+
+    assert (len(with_good_attendance) == len(divisions_with_votes))
+
+    divisions_with_votes = map_divisions_with_votes_to_mps(divisions_with_votes, mp_ids)
+
+

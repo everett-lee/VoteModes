@@ -95,7 +95,7 @@ def download_divisions_list_file_based() -> None:
         raw_divisions.write(json.dumps(divisions))
         raw_divisions.write('}')
 
-def download_divisions_list(year: int, month: int) -> None:
+def download_divisions_list(year: int, month: int) -> List[Dict]:
     first_interval, second_interval, third_interval = get_date_intervals(year, month)
 
     divisions = get_divisions(first_interval, second_interval, third_interval)
@@ -106,11 +106,20 @@ def download_divisions_list(year: int, month: int) -> None:
         division_id = division['DivisionId']
         date = division['Date'].strip()
         title = division['Title'].strip()
+        aye_count = division['AyeCount'],
+        no_count = division['NoCount']
 
-        table.put_item(
+        res = table.put_item(
             Item={
                 'DivisionId': division_id,
                 'VoteDate': date,
-                'Title': title
+                'Title': title,
+                'AyeCount': aye_count,
+                'NoCount': no_count
             }
         )
+
+        if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+            None # TODO Log failure
+
+    return divisions
