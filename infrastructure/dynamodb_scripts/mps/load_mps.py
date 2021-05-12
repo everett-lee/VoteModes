@@ -3,7 +3,7 @@ import boto3
 import os
 
 AWS_PROFILE = os.getenv('AWS_PROFILE')
-TABLE_NAME = 'MPs2019'
+TABLE_NAME = 'MPs'
 dynamodb = None
 
 if (AWS_PROFILE == 'localstack'):

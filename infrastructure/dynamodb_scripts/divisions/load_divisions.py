@@ -3,7 +3,7 @@ import boto3
 import os
 
 AWS_PROFILE = os.getenv('AWS_PROFILE')
-TABLE_NAME = 'Divisions2019'
+TABLE_NAME = 'Divisions'
 dynamodb_resource = None
 
 if (AWS_PROFILE == 'localstack'):
@@ -15,8 +15,8 @@ else:
 
 
 def put_data():
-    with open('../downloader/raw/rawDivisions', 'r') as raw_2019_2020:
-        divisions = json.load(raw_2019_2020)['Data']
+    with open('../downloader/raw/rawDivisions', 'r') as raw_2019_2021:
+        divisions = json.load(raw_2019_2021)['Data']
 
         for division in divisions:
             division_id = division['DivisionId']
@@ -27,8 +27,9 @@ def put_data():
 
             table.put_item(
                 Item={
+                    'DivisionElectionYear': 2019,
                     'DivisionId': division_id,
-                    'VoteDate': date,
+                    'DivisionDate': date,
                     'Title': title,
                     'AyeCount': aye_count,
                     'NoCount': no_count,
@@ -42,14 +43,22 @@ if dynamodb_resource:
             TableName=TABLE_NAME,
             KeySchema=[
                 {
-                    'AttributeName': 'DivisionId',
-                    'KeyType': 'HASH'
+                    'AttributeName': 'DivisionElectionYear',
+                    'KeyType': 'HASH',
+                },
+                {
+                    'AttributeName': 'DivisionDate',
+                    'KeyType': 'RANGE',
                 }
             ],
             AttributeDefinitions=[
                 {
-                    'AttributeName': 'DivisionId',
+                    'AttributeName': 'DivisionElectionYear',
                     'AttributeType': 'N'
+                },
+                {
+                    'AttributeName': 'DivisionDate',
+                    'AttributeType': 'S'
                 }
             ],
             ProvisionedThroughput={

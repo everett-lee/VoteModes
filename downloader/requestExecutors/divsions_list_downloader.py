@@ -59,6 +59,7 @@ def get_divisions(first_interval: Tuple[str, str], second_interval: Tuple[str, s
     third_third = requests.get(URL_SEARCH_DIVISIONS, third_params)
 
     if first_third.status_code != 200:
+        # TODO LOG
         print(first_params, first_third.status_code)
     if second_third.status_code != 200:
         print(second_params, second_third.status_code)
@@ -69,6 +70,7 @@ def get_divisions(first_interval: Tuple[str, str], second_interval: Tuple[str, s
     divisions += [get_fields_of_interest(div) for div in json.loads(second_third.text)]
     divisions += [get_fields_of_interest(div) for div in json.loads(third_third.text)]
 
+    # TODO LOG
     print('processed', len(divisions))
 
     return divisions
