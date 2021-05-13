@@ -1,7 +1,7 @@
 import json
 from unittest import TestCase, mock
-from ..requestExecutors.vote_per_division_downloader import get_division_votes_and_id
-from ..requestExecutors.vote_per_division_downloader import download_division_with_vote
+from votesPerDivision.vote_per_division_downloader import get_division_votes_and_id
+from votesPerDivision.vote_per_division_downloader import download_division_with_vote
 from .mock_response_helper.mock_response_helper import get_mock_response
 
 mp_ids = {172, 4212, 4057, 39, 140, 4362}

@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase, mock
 
-from ..requestExecutors.vote_per_division_downloader import get_mp_ids
+from votesPerDivision.vote_per_division_downloader import get_mp_ids
 
 @mock.patch.dict(os.environ, {'AWS_PROFILE': 'localstack'})
 class IntegrationTests(TestCase):

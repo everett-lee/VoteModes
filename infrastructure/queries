@@ -22,3 +22,10 @@ aws dynamodb query \
     --expression-attribute-values '{":election_year": {"N": "2019"}}' \
     --endpoint-url http://localhost:4566
 
+
+aws dynamodb query \
+    --table-name MPs \
+    --key-condition-expression 'MPElectionYear = :election_year and MemberId > :min_id' \
+    --expression-attribute-values '{":election_year": {"N": "2019"}, ":min_id": {"N": "50"}}' \
+    --endpoint-url http://localhost:4566
+
