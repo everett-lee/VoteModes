@@ -45,8 +45,8 @@ if dynamodb:
                 }
             ],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5
+                'ReadCapacityUnits': 500,
+                'WriteCapacityUnits': 500
             }
         )
 

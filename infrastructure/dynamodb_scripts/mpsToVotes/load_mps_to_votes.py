@@ -18,18 +18,19 @@ def put_data():
         mps_to_votes = json.load(rawMps)['Data']
         table = dynamodb.Table(TABLE_NAME)
 
-        all_mps = table.scan()
+        all_mps = table.get_item(
+            Key={'MPElectionYear': 2019}
+        )['Item']['MPData']
 
-        print(all_mps)
-        print("hello")
+        for mp_id, votes in mps_to_votes.items():
+            mp = all_mps[mp_id]
+            mp['Votes'].update(votes)
 
-        # for mp_id, votes in mps_to_votes.items():
-        #     table.put_item(
-        #         Item={
-        #             'MemberId': int(mp_id),
-        #             'Votes': votes,
-        #         }
-        #     )
-
+        table.put_item(
+            Item={
+                'MPElectionYear': 2019,
+                'MPData': all_mps,
+            }
+        )
 
 put_data()
