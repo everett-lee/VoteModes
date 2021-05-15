@@ -34,13 +34,16 @@ def get_mp_ids() -> Set[int]:
 
     return set(map(lambda x: int(x['MemberId']), dynamodb_mp_ids))
 
-def set_votes(mps_to_votes: Dict) -> None:
-    mps_table = get_table('MPs2019')
+def set_votes(mps_to_votes: Dict, election_year) -> None:
+    if election_year == 2019:
+        mps_table = get_table('MPs2019')
+    else:
+        return
 
     for mp_id, votes in mps_to_votes.items():
         list_votes = [{"DivisionId": div_id, "Vote": vote} for (div_id, vote) in votes.items()]
 
-        mps_table.update_item(
+        res = mps_table.update_item(
             Key={
                 'MPElectionYear': 2019,
                 'MemberId': int(mp_id)
@@ -51,6 +54,9 @@ def set_votes(mps_to_votes: Dict) -> None:
             },
             ReturnValues="UPDATED_NEW"
         )
+
+        if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+            None # TODO Log failure with mp_id
 
 def download_votes_per_division(divisions: List[Dict]) -> None:
     def has_good_attendance(division: dict) -> dict:

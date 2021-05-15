@@ -4,20 +4,16 @@ from typing import Tuple, List, Dict
 import dateutil.parser
 import requests
 
-from .boto3Helpers.client_wrapper import get_table
+from boto3Helpers.client_wrapper import get_table
 
 URL_SEARCH_DIVISIONS = 'https://commonsvotes-api.parliament.uk/data/divisions.json/search'
-TABLE_NAME = 'Divisions2019'
+TABLE_NAME = 'Divisions'
 
 
 def get_fields_of_interest(division: dict) -> dict:
-    def datetime_string_to_date_string(datetime_str: str) -> str:
-        dt = dateutil.parser.isoparse(datetime_str)
-        return str(dt.date())
-
     return {
         'DivisionId': division['DivisionId'],
-        'Date': datetime_string_to_date_string(division['Date']),
+        'Date': division['Date'],
         'Title': division['Title'],
         'AyeCount': division['AyeCount'],
         'NoCount': division['NoCount']
@@ -97,7 +93,7 @@ def download_divisions_list_file_based() -> None:
         raw_divisions.write(json.dumps(divisions))
         raw_divisions.write('}')
 
-def download_divisions_list(year: int, month: int) -> List[Dict]:
+def download_divisions_list(year: int, month: int, mp_election_year: int) -> List[Dict]:
     first_interval, second_interval, third_interval = get_date_intervals(year, month)
 
     divisions = get_divisions(first_interval, second_interval, third_interval)
@@ -113,8 +109,9 @@ def download_divisions_list(year: int, month: int) -> List[Dict]:
 
         res = table.put_item(
             Item={
+                'DivisionElectionYear': mp_election_year,
                 'DivisionId': division_id,
-                'VoteDate': date,
+                'DivisionDate': date,
                 'Title': title,
                 'AyeCount': aye_count,
                 'NoCount': no_count
