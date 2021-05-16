@@ -7,6 +7,7 @@ from votesPerDivision.downloaders import download_all_divisions_with_votes_async
 
 TOTAL_MPS = 650
 
+
 def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Set[int]) -> Dict:
     mps_to_votes = defaultdict(dict)
 
@@ -22,24 +23,19 @@ def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Se
     # only include mps recorded in the database
     return {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}
 
-def get_mp_ids() -> Set[int]:
-    mps_table = get_table('MPs2019')
 
+def get_mp_ids(mps_table: object) -> Set[int]:
     dynamodb_mp_ids = mps_table.scan(
         ProjectionExpression='MemberId',
     )['Items']
 
     if not dynamodb_mp_ids:
-        None # TODO log error
+        None  # TODO log error
 
     return set(map(lambda x: int(x['MemberId']), dynamodb_mp_ids))
 
-def set_votes(mps_to_votes: Dict, election_year) -> None:
-    if election_year == 2019:
-        mps_table = get_table('MPs2019')
-    else:
-        return
 
+def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
     for mp_id, votes in mps_to_votes.items():
         list_votes = [{"DivisionId": div_id, "Vote": vote} for (div_id, vote) in votes.items()]
 
@@ -56,16 +52,22 @@ def set_votes(mps_to_votes: Dict, election_year) -> None:
         )
 
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-            None # TODO Log failure with mp_id
+            None  # TODO Log failure with mp_id
 
-def download_votes_per_division(divisions: List[Dict]) -> None:
+
+def download_votes_per_division(divisions: List[Dict], election_year: int) -> None:
     def has_good_attendance(division: dict) -> dict:
         return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
+
+    if election_year == 2019:
+        mps_table = get_table('MPs')
+    else:
+        return
 
     with_good_attendance = []
     divisions_with_votes = []
 
-    mp_ids = get_mp_ids()
+    mp_ids = get_mp_ids(mps_table)
 
     with_good_attendance = [div for div in divisions if has_good_attendance(div)]
 
@@ -74,8 +76,4 @@ def download_votes_per_division(divisions: List[Dict]) -> None:
     assert (len(with_good_attendance) == len(divisions_with_votes))
 
     mps_to_votes = map_divisions_with_votes_to_mps(divisions_with_votes, mp_ids)
-    set_votes(mps_to_votes)
-
-
-
-
+    set_votes(mps_to_votes, mps_table)

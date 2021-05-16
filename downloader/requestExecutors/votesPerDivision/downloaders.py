@@ -60,4 +60,5 @@ def download_all_divisions_with_votes_async(with_good_attendance: List[Dict], mp
         for future in concurrent.futures.as_completed(futures):
             results.append(future.result())
 
+    print(results)
     return results

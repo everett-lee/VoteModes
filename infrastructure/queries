@@ -5,7 +5,6 @@ aws dynamodb scan \
      
 aws dynamodb scan \
 	--table-name MPs \
-	--projection-expression "Data" \
 	 --endpoint-url http://localhost:4566
 
 aws dynamodb query \

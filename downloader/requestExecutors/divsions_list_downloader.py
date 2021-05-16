@@ -93,7 +93,7 @@ def download_divisions_list_file_based() -> None:
         raw_divisions.write(json.dumps(divisions))
         raw_divisions.write('}')
 
-def download_divisions_list(year: int, month: int, mp_election_year: int) -> List[Dict]:
+def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
     first_interval, second_interval, third_interval = get_date_intervals(year, month)
 
     divisions = get_divisions(first_interval, second_interval, third_interval)
@@ -109,7 +109,7 @@ def download_divisions_list(year: int, month: int, mp_election_year: int) -> Lis
 
         res = table.put_item(
             Item={
-                'DivisionElectionYear': mp_election_year,
+                'DivisionElectionYear': election_year,
                 'DivisionId': division_id,
                 'DivisionDate': date,
                 'Title': title,

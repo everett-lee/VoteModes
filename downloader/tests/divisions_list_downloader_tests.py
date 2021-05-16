@@ -1,10 +1,10 @@
 from ..requestExecutors.divsions_list_downloader import get_date_intervals
 from ..requestExecutors.divsions_list_downloader import get_fields_of_interest
-from .data import get_divisions
+from .data import get_divisions_first
 
 from unittest import TestCase
 
-division = get_divisions()[0]
+division = get_divisions_first()[0]
 
 
 class TestGetDateIntervals(TestCase):

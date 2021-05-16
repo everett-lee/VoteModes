@@ -3,12 +3,12 @@ from unittest import TestCase, mock
 
 from votesPerDivision.downloaders import download_division_with_vote
 from votesPerDivision.downloaders import get_division_votes_and_id
-from .data import get_divisions_with_votes
+from .data import get_divisions_with_votes_first
 from .mock_response_helper.mock_response_helper import get_mock_response
 
 mp_ids = {172, 4212, 4057, 39, 140, 4362}
 
-division = get_divisions_with_votes()[0]
+division = get_divisions_with_votes_first()[0]
 
 class TestGetDivisionVotesAndId(TestCase):
     def test_get_division_votes_and_id(self):
