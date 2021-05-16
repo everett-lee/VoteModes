@@ -1,5 +1,5 @@
-from ..requestExecutors.divsions_list_downloader import get_date_intervals
-from ..requestExecutors.divsions_list_downloader import get_fields_of_interest
+from divisions.divsions_list_downloader import get_date_intervals
+from divisions.downloaders import get_fields_of_interest
 from .data import get_divisions_first
 
 from unittest import TestCase
