@@ -38,7 +38,7 @@ class TestGetDateIntervals(TestCase):
     def test_get_fields_of_interest(self):
         foi = get_fields_of_interest(division)
         self.assertEqual(foi['DivisionId'], -1)
-        self.assertEqual(foi['Date'], '2021-04-28')
+        self.assertEqual(foi['Date'], '2021-04-28T16:54:00')
         self.assertEqual(foi['Title'], 'National Security and Investment Bill: motion to disagree with Lords Amendments 11B and 11C')
         self.assertEqual(foi['AyeCount'], 358)
         self.assertEqual(foi['NoCount'], 269)

@@ -15,9 +15,9 @@ class TestGetDivisionVotesAndId(TestCase):
         division_with_votes = get_division_votes_and_id(division, mp_ids)
 
         self.assertEqual(division_with_votes['DivisionId'], -1)
-        self.assertEqual(set(division_with_votes['Ayes']), {39, 140})
-        self.assertEqual(set(division_with_votes['Noes']), {4362, 4212})
-        self.assertEqual(set(division_with_votes['DidNotAttend']), {4057, 172})
+        self.assertEqual(set(division_with_votes['Ayes']), {172, 4057, 39})
+        self.assertEqual(set(division_with_votes['Noes']), {140, 4362})
+        self.assertEqual(set(division_with_votes['DidNotAttend']), {4212})
 
     @mock.patch('requests.get')
     def test_download_division_with_vote_all_failures(self, mock_get):
@@ -36,7 +36,7 @@ class TestGetDivisionVotesAndId(TestCase):
         result = download_division_with_vote(-1, mp_ids)
 
         self.assertEqual(result['DivisionId'], -1)
-        self.assertGreaterEqual(set(result['Ayes']), {39, 140})
-        self.assertGreaterEqual(set(result['Noes']), {4362, 4212})
-        self.assertGreaterEqual(set(result['DidNotAttend']), {4057, 172})
+        self.assertEqual(set(result['Ayes']), {172, 4057, 39})
+        self.assertEqual(set(result['Noes']), {140, 4362})
+        self.assertEqual(set(result['DidNotAttend']), {4212})
 

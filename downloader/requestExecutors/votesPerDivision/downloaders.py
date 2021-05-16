@@ -2,6 +2,7 @@ import concurrent
 import json
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Set, Dict
+import logging
 
 import requests
 
@@ -25,7 +26,7 @@ def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
     url = '{base_url}{division_id}.json'.format(base_url=URL_GET_DIVISION, division_id=division_id)
     failed_count = 0
 
-    print('downloading division with id', division_id)
+    logging.info('downloading division with id', division_id)
 
     res = requests.get(url)
     while failed_count <= 10 and res.status_code != 200:
@@ -33,11 +34,11 @@ def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
         res = requests.get(url)
 
     if failed_count >= 10:
+        logging.error('failed to download division with votes with URL', url, 'after 10 retries')
         return {
             'last_failure_code': res.status_code,
             'times_called': failed_count
         }
-        # TODO LOG ERROR FETCHING
 
     raw_json = json.loads(res.text)
     return get_division_votes_and_id(raw_json, mp_ids)
@@ -60,5 +61,4 @@ def download_all_divisions_with_votes_async(with_good_attendance: List[Dict], mp
         for future in concurrent.futures.as_completed(futures):
             results.append(future.result())
 
-    print(results)
     return results

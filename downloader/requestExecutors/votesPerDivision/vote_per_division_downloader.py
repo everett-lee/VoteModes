@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 
 from typing import List, Set, Dict
@@ -30,7 +31,7 @@ def get_mp_ids(mps_table: object) -> Set[int]:
     )['Items']
 
     if not dynamodb_mp_ids:
-        None  # TODO log error
+        logging.info('unable to fetch mp ids from database')
 
     return set(map(lambda x: int(x['MemberId']), dynamodb_mp_ids))
 
@@ -52,7 +53,7 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
         )
 
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-            None  # TODO Log failure with mp_id
+            logging.error('failed to update votes for mp with id', mp_id)
 
 
 def download_votes_per_division(divisions: List[Dict], election_year: int) -> None:

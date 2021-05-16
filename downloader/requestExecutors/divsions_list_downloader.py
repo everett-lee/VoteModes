@@ -2,6 +2,7 @@ import json
 from typing import Tuple, List, Dict
 
 import dateutil.parser
+import logging
 import requests
 
 from boto3Helpers.client_wrapper import get_table
@@ -55,19 +56,17 @@ def get_divisions(first_interval: Tuple[str, str], second_interval: Tuple[str, s
     third_third = requests.get(URL_SEARCH_DIVISIONS, third_params)
 
     if first_third.status_code != 200:
-        # TODO LOG
-        print(first_params, first_third.status_code)
+        logging.error("failed to download interval ", first_interval)
     if second_third.status_code != 200:
-        print(second_params, second_third.status_code)
+        logging.error("failed to download interval ", second_interval)
     if third_third.status_code != 200:
-        print(third_params, third_third.status_code)
+        logging.error("failed to download interval ", third_interval)
 
     divisions += [get_fields_of_interest(div) for div in json.loads(first_third.text)]
     divisions += [get_fields_of_interest(div) for div in json.loads(second_third.text)]
     divisions += [get_fields_of_interest(div) for div in json.loads(third_third.text)]
 
-    # TODO LOG
-    print('processed', len(divisions))
+    logging.info('processed', len(divisions), 'divisions')
 
     return divisions
 
@@ -92,6 +91,7 @@ def download_divisions_list_file_based() -> None:
         raw_divisions.write('{"Data": ')
         raw_divisions.write(json.dumps(divisions))
         raw_divisions.write('}')
+
 
 def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
     first_interval, second_interval, third_interval = get_date_intervals(year, month)
@@ -119,6 +119,6 @@ def download_divisions_list(year: int, month: int, election_year: int) -> List[D
         )
 
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-            None # TODO Log failure
+            logging.error('Failed to put division', division, 'to database')
 
     return divisions
