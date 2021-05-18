@@ -1,14 +1,15 @@
 import concurrent
 import json
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Set, Dict
-import logging
 
 import requests
 
 from votesPerDivision.multithreaded.time_it import timeit
 
 URL_GET_DIVISION = 'https://commonsvotes-api.parliament.uk/data/division/'
+
 
 def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
     ayes = set(map(lambda x: x['MemberId'], division['Ayes']))
@@ -21,6 +22,7 @@ def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
         'Noes': list(noes),
         'DidNotAttend': list(no_attend),
     }
+
 
 def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
     url = '{base_url}{division_id}.json'.format(base_url=URL_GET_DIVISION, division_id=division_id)

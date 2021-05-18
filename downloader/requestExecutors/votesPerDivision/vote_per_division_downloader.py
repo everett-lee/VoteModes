@@ -56,17 +56,11 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
             logging.error('failed to update votes for mp with id', mp_id)
 
 
-def download_votes_per_division(divisions: List[Dict], election_year: int) -> None:
+def download_votes_per_division(divisions: List[Dict]) -> None:
     def has_good_attendance(division: dict) -> dict:
         return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
 
-    if election_year == 2019:
-        mps_table = get_table('MPs')
-    else:
-        return
-
-    with_good_attendance = []
-    divisions_with_votes = []
+    mps_table = get_table('MPs')
 
     mp_ids = get_mp_ids(mps_table)
 

@@ -5,10 +5,10 @@ from unittest import TestCase, mock
 import boto3
 
 from data import get_divisions_first
-from data import get_mps
+from data import get_divisions_second
 from data import get_divisions_with_votes_first
 from data import get_divisions_with_votes_second
-from data import get_divisions_second
+from data import get_mps
 from downloader.main import run_download
 from downloader.tests.mock_response_helper.mock_response_helper import get_mock_response
 
@@ -85,8 +85,6 @@ class IntegrationTests(TestCase):
         self.assertVotes(mps_as_map[140]['Votes'], 'No', 'Aye', 'No')
         self.assertVotes(mps_as_map[4362]['Votes'], 'No', 'No', 'No')
         self.assertVotes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend', 'NoAttend')
-
-
 
     def assertVotes(self, mp_votes, first_vote, second_vote, third_vote):
         self.assertEqual(mp_votes[0]['Vote'], first_vote)

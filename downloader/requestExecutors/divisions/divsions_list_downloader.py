@@ -6,6 +6,7 @@ from divisions.downloaders import get_date_intervals, get_divisions
 
 TABLE_NAME = 'Divisions'
 
+
 def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
     intervals = get_date_intervals(year, month)
 

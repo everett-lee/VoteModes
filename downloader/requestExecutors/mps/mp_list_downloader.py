@@ -14,7 +14,7 @@ def get_fields_of_interest(mp: dict) -> dict:
     }
 
 
-def download_active_mp_list() -> None:
+def download_active_mp_list_to_file() -> None:
     full_url = URL_GET_MPS_BASE + URL_GET_MPS_QUERY.format(start_date=START_DATE, end_date=END_DATE)
     headers = {'content-type': 'application/json'}
     mp_results = requests.get(full_url, headers=headers)

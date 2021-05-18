@@ -5,6 +5,7 @@ from votesPerDivision.vote_per_division_downloader import map_divisions_with_vot
 
 TOTAL_MPS = 650
 
+
 def download_votes_per_division_file_based() -> None:
     def has_good_attendance(division: dict) -> dict:
         return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
@@ -38,4 +39,3 @@ def download_votes_per_division_file_based() -> None:
         raw_mps_to_votes.write('{"Data": ')
         raw_mps_to_votes.write(json.dumps(mps_to_votes))
         raw_mps_to_votes.write('}')
-

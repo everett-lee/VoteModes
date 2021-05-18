@@ -157,3 +157,18 @@ Thumbs.db
 # End of https://www.toptal.com/developers/gitignore/api/python,scala
 
 *.idea
+
+# Python deps
+bin/
+boto*/
+certifi*/
+chardet*/
+dateutil*/
+idna*/
+jmes*/
+python_dateutil*/
+requests*/
+s3transfer*/
+six*/
+*six.py
+urllib*/

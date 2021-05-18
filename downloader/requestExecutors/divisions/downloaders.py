@@ -17,7 +17,7 @@ def get_fields_of_interest(division: dict) -> dict:
     }
 
 
-def download_divisions_list_file_based() -> None:
+def download_divisions_list_to_file() -> None:
     divisions = []
 
     # 2019

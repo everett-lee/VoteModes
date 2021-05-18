@@ -13,14 +13,11 @@ aws dynamodb query \
     --expression-attribute-values '{":election_year": {"N": "2019"}, ":start_date": {"S": "2021-01-01"}}' \
     --endpoint-url http://localhost:4566
 
-
-
 aws dynamodb query \
     --table-name MPs \
     --key-condition-expression 'MPElectionYear = :election_year' \
     --expression-attribute-values '{":election_year": {"N": "2019"}}' \
     --endpoint-url http://localhost:4566
-
 
 aws dynamodb query \
     --table-name MPs \
