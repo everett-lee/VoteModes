@@ -172,3 +172,8 @@ s3transfer*/
 six*/
 *six.py
 urllib*/
+
+# Terraform
+*.tfstate*
+*.terraform*
+tfplan
