@@ -70,7 +70,9 @@ def get_divisions(intervals: List[Tuple[str, str]]) -> List[Dict]:
             res = requests.get(URL_SEARCH_DIVISIONS, params)
 
             if res.status_code != 200:
-                logging.error("failed to download interval ", interval)
+                error = "failed to download interval {interval}".format(interval=interval)
+                logging.error(error)
+                raise RuntimeError(error)
 
             downloaded_divisions += [get_fields_of_interest(div) for div in json.loads(res.text)]
 

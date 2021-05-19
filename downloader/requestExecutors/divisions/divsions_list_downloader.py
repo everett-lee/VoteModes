@@ -9,9 +9,7 @@ TABLE_NAME = 'Divisions'
 
 def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
     intervals = get_date_intervals(year, month)
-
     divisions = get_divisions(intervals)
-
     table = get_table(TABLE_NAME)
 
     for division in divisions:

@@ -12,8 +12,9 @@ provider "aws" {
 
   endpoints {
     lambda = "http://0.0.0.0:4574"
-    iam    = "http://0.0.0.0:4593"
+    iam    = "http://localhost:4566"
     dynamodb       = "http://localhost:4566"
+    sqs = "http://localhost:4566"
   }
 }
 
@@ -25,4 +26,20 @@ module divisions_table {
   attribute_name_two = "DivisionDate"
   attribute_type_two = "S"
   tag_name = "divisions-table"
+}
+
+module mps_table {
+  source = "../modules/dynamodb"
+  table_name = "MPs"
+  attribute_name_one = "MPElectionYear"
+  attribute_type_one = "N"
+  attribute_name_two = "MemberId"
+  attribute_type_two = "N"
+  tag_name = "mps-table"
+}
+
+module lambda_queue {
+  source = "../modules/sqs"
+  queue_name = "LambdaQueue"
+  tag_name = "lambda-queue"
 }

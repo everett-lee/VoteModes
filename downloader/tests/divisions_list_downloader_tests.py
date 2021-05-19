@@ -1,8 +1,9 @@
-from divisions.divsions_list_downloader import get_date_intervals
-from divisions.downloaders import get_fields_of_interest
-from .data import get_divisions_first
+from unittest import TestCase, mock
 
-from unittest import TestCase
+from divisions.divsions_list_downloader import get_date_intervals
+from divisions.downloaders import get_fields_of_interest, get_divisions
+from .data import get_divisions_first
+from .mock_response_helper.mock_response_helper import get_mock_response
 
 division = get_divisions_first()[0]
 
@@ -39,6 +40,15 @@ class TestGetDateIntervals(TestCase):
         foi = get_fields_of_interest(division)
         self.assertEqual(foi['DivisionId'], -1)
         self.assertEqual(foi['Date'], '2021-04-28T16:54:00')
-        self.assertEqual(foi['Title'], 'National Security and Investment Bill: motion to disagree with Lords Amendments 11B and 11C')
+        self.assertEqual(foi['Title'],
+                         'National Security and Investment Bill: motion to disagree with Lords Amendments 11B and 11C')
         self.assertEqual(foi['AyeCount'], 358)
         self.assertEqual(foi['NoCount'], 269)
+
+    @mock.patch('requests.get')
+    def test_download_division_with_vote_all_failures(self, mock_get):
+        mock_response = get_mock_response(status=500)
+        interval = get_date_intervals(1999, 12)
+        mock_get.return_value = mock_response
+        with self.assertRaises(RuntimeError):
+            get_divisions(interval)

@@ -3,26 +3,43 @@ from typing import Union
 
 import boto3
 
-boto_client = None
+dynamodb_client = None
+sqs_client = None
 
 
-def get_client() -> Union[object, None]:
+def get_dynamodb_client() -> Union[object, None]:
     aws_profile = os.getenv('AWS_PROFILE')
     invalid_profile_msg = 'Unable to get Boto client, AWS profile: {profile} is not valid'.format(profile=aws_profile)
 
-    if boto_client:
-        return boto_client
-
     if aws_profile == 'localstack':
-        dynamodb = boto3.session.Session(profile_name='localstack').resource('dynamodb',
-                                                                             endpoint_url='http://localhost:4566')
+        dynamodb_client = boto3.session.Session(profile_name='localstack').resource('dynamodb',
+                                                                                    endpoint_url='http://localhost:4566')
     else:
         raise RuntimeError(invalid_profile_msg)
 
-    return dynamodb
+    return dynamodb_client
+
+
+def get_sqs_client() -> Union[object, None]:
+    aws_profile = os.getenv('AWS_PROFILE')
+    invalid_profile_msg = 'Unable to get Boto client, AWS profile: {profile} is not valid'.format(profile=aws_profile)
+
+    if aws_profile == 'localstack':
+        sqs_client = boto3.session.Session(profile_name='localstack').resource('sqs',
+                                                                               endpoint_url='http://localhost:4566')
+    else:
+        raise RuntimeError(invalid_profile_msg)
+
+    return sqs_client
 
 
 def get_table(table_name: str) -> object:
-    dynamodb = get_client()
+    dynamodb = get_dynamodb_client()
 
     return dynamodb.Table(table_name)
+
+
+def get_queue(queue_url: str) -> object:
+    sqs = get_sqs_client()
+
+    return sqs.Queue(queue_url)

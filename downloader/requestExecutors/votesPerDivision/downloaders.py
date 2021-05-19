@@ -36,11 +36,9 @@ def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
         res = requests.get(url)
 
     if failed_count >= 10:
-        logging.error('failed to download division with votes with URL', url, 'after 10 retries')
-        return {
-            'last_failure_code': res.status_code,
-            'times_called': failed_count
-        }
+        error = 'failed to download division with votes with URL {url}'.format(url=url)
+        logging.error(error)
+        raise RuntimeError(error)
 
     raw_json = json.loads(res.text)
     return get_division_votes_and_id(raw_json, mp_ids)

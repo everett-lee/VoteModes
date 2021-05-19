@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import List, Set, Dict
 
 from boto3Helpers.client_wrapper import get_table
-from votesPerDivision.downloaders import download_all_divisions_with_votes_async, download_all_divisions_with_votes_sync
+from votesPerDivision.downloaders import download_all_divisions_with_votes_async
 
 TOTAL_MPS = 650
 

@@ -23,10 +23,8 @@ class TestGetDivisionVotesAndId(TestCase):
     def test_download_division_with_vote_all_failures(self, mock_get):
         mock_response = get_mock_response(status=500)
         mock_get.return_value = mock_response
-        result = download_division_with_vote(-1, mp_ids)
-
-        self.assertEqual(result['last_failure_code'], 500)
-        self.assertGreaterEqual(result['times_called'], 10)
+        with self.assertRaises(RuntimeError):
+            download_division_with_vote(-1, mp_ids)
 
     @mock.patch('requests.get')
     def test_download_division_with_vote_two_failures(self, mock_get):

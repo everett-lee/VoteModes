@@ -7,6 +7,7 @@ def run_download():
     download_votes_per_division(divisions=divisions)
 
 
+
 if __name__ == '__main__':
     # download_divisions_list_file_based()
     # divsions_list_downloader.download_divisions_list(2021, 5)
