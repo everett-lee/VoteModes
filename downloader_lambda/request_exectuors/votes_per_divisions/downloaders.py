@@ -6,7 +6,7 @@ from typing import List, Set, Dict
 
 import requests
 
-from votesPerDivision.multithreaded.time_it import timeit
+from downloader.request_exectuors.votes_per_divisions.multithreaded.time_it import timeit
 
 URL_GET_DIVISION = 'https://commonsvotes-api.parliament.uk/data/division/'
 

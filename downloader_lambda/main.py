@@ -1,5 +1,5 @@
-from divisions.divsions_list_downloader import download_divisions_list
-from votesPerDivision.vote_per_division_downloader import download_votes_per_division
+from downloader.request_exectuors.divisions.divsions_list_downloader import download_divisions_list
+from downloader.request_exectuors.votes_per_divisions.vote_per_division_downloader import download_votes_per_division
 
 
 def run_download():

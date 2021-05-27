@@ -1,8 +1,8 @@
 import logging
 from typing import List, Dict
 
-from boto3Helpers.client_wrapper import get_table
-from divisions.downloaders import get_date_intervals, get_divisions
+from downloader.request_exectuors.boto3_helpers.client_wrapper import get_table
+from downloader.request_exectuors.divisions.downloaders import get_date_intervals, get_divisions
 
 TABLE_NAME = 'Divisions'
 

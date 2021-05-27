@@ -1,8 +1,8 @@
 import os
 
-from boto3Helpers.client_wrapper import get_queue
-from divisions.divsions_list_downloader import download_divisions_list
-from votesPerDivision.vote_per_division_downloader import download_votes_per_division
+from downloader_lambda.request_exectuors.boto3_helpers.client_wrapper import get_queue
+from downloader_lambda.request_exectuors.divisions.divsions_list_downloader import download_divisions_list
+from downloader_lambda.request_exectuors.votes_per_divisions.vote_per_division_downloader import download_votes_per_division
 from datetime import date
 
 def lambda_handler(event, context):

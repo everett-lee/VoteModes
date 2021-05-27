@@ -1,7 +1,7 @@
 import json
 
-from votesPerDivision.downloaders import download_all_divisions_with_votes_sync
-from votesPerDivision.vote_per_division_downloader import map_divisions_with_votes_to_mps
+from downloader.request_exectuors.votes_per_divisions.downloaders import download_all_divisions_with_votes_sync
+from downloader.request_exectuors.votes_per_divisions.vote_per_division_downloader import map_divisions_with_votes_to_mps
 
 TOTAL_MPS = 650
 
