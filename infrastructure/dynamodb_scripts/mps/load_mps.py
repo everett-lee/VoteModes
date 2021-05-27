@@ -13,7 +13,7 @@ else:
     print("AWS profile: {profile} is not valid".format(profile=AWS_PROFILE))
 
 def put_data():
-    with open('../downloader/raw/rawMPList', 'r') as rawMps:
+    with open('../downloader_lambda/raw/rawMPList', 'r') as rawMps:
         mps = json.load(rawMps)['Data']
 
         for mp in mps:

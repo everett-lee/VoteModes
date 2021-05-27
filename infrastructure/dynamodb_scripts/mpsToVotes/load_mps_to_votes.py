@@ -14,7 +14,7 @@ else:
 
 
 def put_data():
-    with open('../downloader/raw/rawMPsToVotes', 'r') as rawMps:
+    with open('../downloader_lambda/raw/rawMPsToVotes', 'r') as rawMps:
         mps_to_votes = json.load(rawMps)['Data']
         table = dynamodb.Table(TABLE_NAME)
 

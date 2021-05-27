@@ -1,11 +1,10 @@
 import logging
 from typing import List, Dict
 
-from downloader.request_exectuors.boto3_helpers.client_wrapper import get_table
-from downloader.request_exectuors.divisions.downloaders import get_date_intervals, get_divisions
+from downloader_lambda.request_exectuors.boto3_helpers.client_wrapper import get_table
+from downloader_lambda.request_exectuors.divisions.downloaders import get_date_intervals, get_divisions
 
 TABLE_NAME = 'Divisions'
-
 
 def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
     intervals = get_date_intervals(year, month)

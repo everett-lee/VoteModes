@@ -25,3 +25,12 @@ aws dynamodb query \
     --expression-attribute-values '{":election_year": {"N": "2019"}, ":min_id": {"N": "50"}}' \
     --endpoint-url http://localhost:4566
 
+aws lambda invoke \
+    --function-name DownloaderLambda \
+    --payload $(echo "{\"foo\":\"bar\"}" | base64) \
+    response.json \
+    --endpoint-url http://localhost:4566
+
+
+zip -r9 ../downloader_lambda.zip * -x "bin/*" requirements.txt setup.cfg
+zip -r9 ../downloader_lambda.zip * requirements.txt

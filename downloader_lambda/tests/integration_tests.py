@@ -10,8 +10,8 @@ from data import get_divisions_second
 from data import get_divisions_with_votes_first
 from data import get_divisions_with_votes_second
 from data import get_mps
-from downloader.handler import lambda_handler
-from downloader.tests.mock_response_helper.mock_response_helper import get_mock_response
+from downloader_lambda.downloader_lambda import lambda_handler
+from downloader_lambda.tests.mock_response_helper.mock_response_helper import get_mock_response
 
 localhost_queue_url = "http://localhost:4566/000000000000/LambdaQueue"
 

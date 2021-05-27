@@ -1,7 +1,7 @@
 from unittest import TestCase, mock
 
-from downloader.request_exectuors.divisions.divsions_list_downloader import get_date_intervals
-from downloader.request_exectuors.divisions.downloaders import get_fields_of_interest, get_divisions
+from downloader_lambda.request_exectuors.divisions.divsions_list_downloader import get_date_intervals
+from downloader_lambda.request_exectuors.divisions.downloaders import get_fields_of_interest, get_divisions
 from .data import get_divisions_first
 from .mock_response_helper.mock_response_helper import get_mock_response
 

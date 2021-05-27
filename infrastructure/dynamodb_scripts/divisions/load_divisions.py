@@ -7,15 +7,20 @@ TABLE_NAME = 'Divisions'
 dynamodb_resource = None
 
 if (AWS_PROFILE == 'localstack'):
+    print('Starting load divisions with localstack')
     dynamodb_resource = boto3.session.Session(profile_name='localstack').resource('dynamodb',
                                                                                   endpoint_url='http://localhost:4566')
+
+elif (AWS_PROFILE == 'votemodes'):
+    print('Starting load divisions with votemodes')
+    dynamodb_resource = boto3.resource('dynamodb')
 
 else:
     print("AWS profile: {profile} is not valid".format(profile=AWS_PROFILE))
 
 
-def put_data():
-    with open('../downloader/raw/rawDivisions', 'r') as raw_2019_2021:
+def put_data(divisions_table):
+    with open('../downloader_lambda/raw/rawDivisions', 'r') as raw_2019_2021:
         divisions = json.load(raw_2019_2021)['Data']
 
         for division in divisions:
@@ -25,7 +30,7 @@ def put_data():
             aye_count = division['AyeCount']
             no_count = division['NoCount']
 
-            table.put_item(
+            divisions_table.put_item(
                 Item={
                     'DivisionElectionYear': 2019,
                     'DivisionId': division_id,
@@ -38,36 +43,8 @@ def put_data():
 
 
 if dynamodb_resource:
-    try:
-        table = dynamodb_resource.create_table(
-            TableName=TABLE_NAME,
-            KeySchema=[
-                {
-                    'AttributeName': 'DivisionElectionYear',
-                    'KeyType': 'HASH',
-                },
-                {
-                    'AttributeName': 'DivisionDate',
-                    'KeyType': 'RANGE',
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'DivisionElectionYear',
-                    'AttributeType': 'N'
-                },
-                {
-                    'AttributeName': 'DivisionDate',
-                    'AttributeType': 'S'
-                }
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5
-            }
-        )
-
-        put_data()
-
-    except Exception as err:
-        print(err)
+    divisions_table = dynamodb_resource.Table(TABLE_NAME)
+    print('Putting divisons table data')
+    put_data(divisions_table)
+else:
+    print('No dynamodb resource')

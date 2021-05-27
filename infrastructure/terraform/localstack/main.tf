@@ -11,9 +11,9 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    lambda = "http://0.0.0.0:4574"
+    lambda = "http://0.0.0.0:4566"
     iam    = "http://localhost:4566"
-    dynamodb       = "http://localhost:4566"
+    dynamodb      = "http://localhost:4566"
     sqs = "http://localhost:4566"
   }
 }
@@ -38,8 +38,11 @@ module mps_table {
   tag_name = "mps-table"
 }
 
-module lambda_queue {
-  source = "../modules/sqs"
+module lambda {
+  source = "../modules/lambda"
+  function_name = "DownloaderLambda"
+  file_name = "downloader_lambda.zip"
+  handler = "downloader_lambda.lambda_handler"
+  tag_name = "downloader_lambda"
   queue_name = "LambdaQueue"
-  tag_name = "lambda-queue"
 }
