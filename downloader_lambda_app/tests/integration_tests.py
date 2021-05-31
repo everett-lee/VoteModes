@@ -4,14 +4,15 @@ from datetime import date
 from unittest import TestCase, mock
 
 import boto3
+import time
 
 from data import get_divisions_first
 from data import get_divisions_second
 from data import get_divisions_with_votes_first
 from data import get_divisions_with_votes_second
 from data import get_mps
-from downloader_lambda.downloader_lambda import lambda_handler
-from downloader_lambda.tests.mock_response_helper.mock_response_helper import get_mock_response
+from downloader_lambda_app.downloader_lambda import lambda_handler
+from downloader_lambda_app.tests.mock_response_helper.mock_response_helper import get_mock_response
 
 localhost_queue_url = "http://localhost:4566/000000000000/LambdaQueue"
 
@@ -73,6 +74,7 @@ class IntegrationTests(TestCase):
         self.assert_votes(mps_as_map[4362]['Votes'], 'No', 'No', 'No')
         self.assert_votes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend', 'NoAttend')
 
+        time.sleep(5)
         self.assert_queue()
 
     def assert_votes(self, mp_votes, first_vote, second_vote, third_vote):
@@ -85,7 +87,7 @@ class IntegrationTests(TestCase):
     def assert_queue(self):
         today = date.today()
         year = today.year
-        month = today.month
+        month = today.month - 1
 
         sqs = self.get_sqs().Queue(localhost_queue_url)
         messages = sqs.receive_messages()

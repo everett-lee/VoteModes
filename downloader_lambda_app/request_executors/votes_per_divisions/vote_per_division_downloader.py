@@ -3,8 +3,8 @@ from collections import defaultdict
 
 from typing import List, Set, Dict
 
-from downloader_lambda.request_exectuors.boto3_helpers.client_wrapper import get_table
-from downloader_lambda.request_exectuors.votes_per_divisions.downloaders import download_all_divisions_with_votes_async
+from ..boto3_helpers.client_wrapper import get_table
+from .downloaders import download_all_divisions_with_votes_async
 
 TOTAL_MPS = 650
 

@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-west-1"
+  region = "eu-west-1"
 }
 
 module divisions_table {
@@ -34,8 +34,8 @@ module mps_table {
 //module lambda {
 //  source = "../modules/lambda"
 //  function_name = "DownloaderLambda"
-//  file_name = "downloader_lambda.zip"
-//  handler = "downloader_lambda.lambda_handler"
-//  tag_name = "downloader_lambda"
+//  file_name = "downloader_lambda_app.zip"
+//  handler = "downloader_lambda_app.lambda_handler"
+//  tag_name = "downloader_lambda_app"
 //  queue_name = "LambdaQueue"
 //}

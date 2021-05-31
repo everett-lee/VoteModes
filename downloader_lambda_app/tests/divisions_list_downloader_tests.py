@@ -1,7 +1,8 @@
+from datetime import datetime
 from unittest import TestCase, mock
 
-from downloader_lambda.request_exectuors.divisions.divsions_list_downloader import get_date_intervals
-from downloader_lambda.request_exectuors.divisions.downloaders import get_fields_of_interest, get_divisions
+from ..request_executors.divisions.divisions_list_downloader import get_date_intervals
+from ..request_executors.divisions.downloaders import get_fields_of_interest, get_divisions, increment_date
 from .data import get_divisions_first
 from .mock_response_helper.mock_response_helper import get_mock_response
 
@@ -52,3 +53,31 @@ class TestGetDateIntervals(TestCase):
         mock_get.return_value = mock_response
         with self.assertRaises(RuntimeError):
             get_divisions(interval)
+
+    def test_increment_date_empty_set(self):
+        mock_dates_memo = set()
+        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        updated = increment_date(input_date, mock_dates_memo)
+
+        self.assertEqual(updated, '2021-05-17T11:59:59')
+
+    def test_increment_date_one_date_clash(self):
+        mock_dates_memo = {'2021-05-17T11:59:59'}
+        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        updated = increment_date(input_date, mock_dates_memo)
+
+        self.assertEqual(updated, '2021-05-17T12:00:00')
+
+    def test_increment_date_two_date_clashes(self):
+        mock_dates_memo = {'2021-05-17T11:59:59', '2021-05-17T12:00:00'}
+        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        updated = increment_date(input_date, mock_dates_memo)
+
+        self.assertEqual(updated, '2021-05-17T12:00:01')
+
+    def test_increment_date_one_date_clash_one_unrelated(self):
+        mock_dates_memo = {'2021-05-17T11:59:59', '2021-06-17T12:20:00'}
+        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        updated = increment_date(input_date, mock_dates_memo)
+
+        self.assertEqual(updated, '2021-05-17T12:00:00')

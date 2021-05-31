@@ -4,16 +4,22 @@ import os
 
 AWS_PROFILE = os.getenv('AWS_PROFILE')
 TABLE_NAME = 'MPs'
-dynamodb = None
+dynamodb_resource = None
 
 if (AWS_PROFILE == 'localstack'):
-    dynamodb = boto3.session.Session(profile_name='localstack').resource('dynamodb',
-                            endpoint_url='http://localhost:4566')
+    dynamodb_resource = boto3.session.Session(profile_name='localstack').resource('dynamodb',
+                                                                                  endpoint_url='http://localhost:4566')
+
+elif (AWS_PROFILE == 'votemodes'):
+    print('Starting load MPs with votemodes')
+    dynamodb_resource = boto3.resource('dynamodb')
+
+
 else:
     print("AWS profile: {profile} is not valid".format(profile=AWS_PROFILE))
 
-def put_data():
-    with open('../downloader_lambda/raw/rawMPList', 'r') as rawMps:
+def put_data(table):
+    with open('../downloader_lambda_app/raw/rawMPList', 'r') as rawMps:
         mps = json.load(rawMps)['Data']
 
         for mp in mps:
@@ -29,37 +35,11 @@ def put_data():
                 }
             )
 
-if dynamodb:
+if dynamodb_resource:
     try:
-        table = dynamodb.create_table(
-            TableName=TABLE_NAME,
-            KeySchema=[
-                {
-                    'AttributeName': 'MPElectionYear',
-                    'KeyType': 'HASH'
-                },
-                {
-                    'AttributeName': 'MemberId',
-                    'KeyType': 'RANGE'
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'MPElectionYear',
-                    'AttributeType': 'N'
-                },
-                {
-                    'AttributeName': 'MemberId',
-                    'AttributeType': 'N'
-                }
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnits': 5,
-                'WriteCapacityUnits': 5
-            }
-        )
+        table = dynamodb_resource.Table(TABLE_NAME)
+        put_data(table)
 
-        put_data()
 
     except Exception as err:
         print(err)

@@ -1,16 +1,37 @@
 import json
 import logging
-from typing import Tuple, List, Dict
+from datetime import timedelta
+from typing import Tuple, List, Dict, Set
 
+import dateutil.parser
 import requests
 
 URL_SEARCH_DIVISIONS = 'https://commonsvotes-api.parliament.uk/data/divisions.json/search'
+DATES_MEM0 = set()
+
+"""
+Date of division is used as a range key in the database, but this appears to get defaulted
+to midnight in some cases, resulting in duplicate keys. This workaround ensures all dates 
+are unique
+"""
+def increment_date(old_date: str, dates_memo: Set[str]) -> str:
+    if old_date not in dates_memo:
+        return old_date
+
+    old_date_str = dateutil.parser.parse(old_date)
+    incremented_date = old_date_str + timedelta(seconds=1)
+    print('old', old_date, 'new', incremented_date.strftime("%Y-%m-%dT%H:%M:%S%z"))
+    return increment_date(incremented_date.strftime("%Y-%m-%dT%H:%M:%S%z"), dates_memo)
 
 
 def get_fields_of_interest(division: dict) -> dict:
+    current_date = division['Date']
+    current_date = increment_date(current_date, DATES_MEM0)
+    DATES_MEM0.add(current_date)
+
     return {
         'DivisionId': division['DivisionId'],
-        'Date': division['Date'],
+        'Date': current_date,
         'Title': division['Title'],
         'AyeCount': division['AyeCount'],
         'NoCount': division['NoCount']
@@ -18,6 +39,7 @@ def get_fields_of_interest(division: dict) -> dict:
 
 
 def download_divisions_list_to_file() -> None:
+    DATES_MEM0.clear()
     divisions = []
 
     # 2019
@@ -63,6 +85,8 @@ def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
 
 
 def get_divisions(intervals: List[Tuple[str, str]]) -> List[Dict]:
+    DATES_MEM0.clear()
+
     def make_requests() -> List[Dict]:
         downloaded_divisions = []
         for interval in intervals:

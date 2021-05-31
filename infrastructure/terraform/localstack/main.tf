@@ -41,8 +41,8 @@ module mps_table {
 module lambda {
   source = "../modules/lambda"
   function_name = "DownloaderLambda"
-  file_name = "downloader_lambda.zip"
-  handler = "downloader_lambda.lambda_handler"
+  file_name = "downloader_lambda_app.zip"
+  handler = "downloader_lambda_app.downloader_lambda.lambda_handler"
   tag_name = "downloader_lambda"
   queue_name = "LambdaQueue"
 }

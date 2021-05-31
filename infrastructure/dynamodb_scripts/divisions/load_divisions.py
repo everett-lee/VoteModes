@@ -20,7 +20,7 @@ else:
 
 
 def put_data(divisions_table):
-    with open('../downloader_lambda/raw/rawDivisions', 'r') as raw_2019_2021:
+    with open('../downloader_lambda_app/raw/rawDivisions', 'r') as raw_2019_2021:
         divisions = json.load(raw_2019_2021)['Data']
 
         for division in divisions:
