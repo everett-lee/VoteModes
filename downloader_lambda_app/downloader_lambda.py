@@ -7,7 +7,7 @@ from .request_executors.votes_per_divisions.vote_per_division_downloader import 
     download_votes_per_division
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     QUEUE_URL = os.getenv('QUEUE_URL')
 
     today = date.today()

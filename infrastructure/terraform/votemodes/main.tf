@@ -30,6 +30,12 @@ module mps_table {
   attribute_type_two = "N"
   tag_name = "mps-table"
 }
+
+module lambda_repo {
+  source = "../modules/ecr"
+  repo_name = "lambda_downloader_repo"
+}
+
 //
 //module lambda {
 //  source = "../modules/lambda"

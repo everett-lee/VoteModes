@@ -11,7 +11,7 @@ from data import get_divisions_second
 from data import get_divisions_with_votes_first
 from data import get_divisions_with_votes_second
 from data import get_mps
-from downloader_lambda_app.downloader_lambda import lambda_handler
+from downloader_lambda_app.downloader_lambda import handler
 from downloader_lambda_app.tests.mock_response_helper.mock_response_helper import get_mock_response
 
 localhost_queue_url = "http://localhost:4566/000000000000/LambdaQueue"
@@ -31,7 +31,7 @@ class IntegrationTests(TestCase):
         [divisions_table, mps_table] = self.set_up_tables()
         self.set_mock_responses(mock_get)
 
-        lambda_handler(None, None)
+        handler(None, None)
 
         saved_divisions = self.scan_table(divisions_table)['Items']
         self.assertEqual(len(saved_divisions), 2)
@@ -53,7 +53,7 @@ class IntegrationTests(TestCase):
         self.assert_votes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend', None)
 
         # second run
-        lambda_handler(None, None)
+        handler(None, None)
 
         saved_divisions = self.scan_table(divisions_table)['Items']
         self.assertEqual(len(saved_divisions), 3)

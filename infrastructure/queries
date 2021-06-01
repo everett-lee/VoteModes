@@ -31,6 +31,31 @@ aws lambda invoke \
     response.json \
     --endpoint-url http://localhost:4566
 
+aws dynamodb query \
+    --table-name MPs \
+    --key-condition-expression 'MPElectionYear = :election_year and MemberId > :min_id' \
+    --expression-attribute-values '{":election_year": {"N": "2019"}, ":min_id": {"N": "50"}}' \
+    --endpoint-url http://localhost:4566
+
+CORBYN
+aws dynamodb query \
+    --table-name MPs \
+    --key-condition-expression 'MPElectionYear = :election_year and MemberId = :mp_id' \
+    --expression-attribute-values '{":election_year": {"N": "2019"}, ":mp_id": {"N": "185"}}'
 
 zip -r9 ../downloader_lambda_app.zip * -x "bin/*" requirements.txt setup.cfg
 zip -r9 ../downloader_lambda_app.zip * requirements.txt
+
+
+>>>
+>>> import boto3
+>>> from boto3.dynamodb.conditions import Key
+>>> dynamodb_client = boto3.session.Session(profile_name='localstack').resource('dynamodb',
+... dynamodb_client = boto3.session.Session(profile_name='localstack').resource('dynamodb')
+... dynamodb_client = boto3.resource('dynamodb')
+  File "<stdin>", line 3
+    dynamodb_client = boto3.resource('dynamodb')
+    ^
+SyntaxError: invalid syntax
+    response = table.query(KeyConditionExpression=Key('year').eq(year)
+
