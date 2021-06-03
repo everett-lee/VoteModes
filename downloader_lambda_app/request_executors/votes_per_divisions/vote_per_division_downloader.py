@@ -40,21 +40,22 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
     for mp_id, votes in mps_to_votes.items():
         list_votes = [{"DivisionId": div_id, "Vote": vote} for (div_id, vote) in votes.items()]
 
-        res = mps_table.update_item(
-            Key={
-                'MPElectionYear': 2019,
-                'MemberId': int(mp_id)
-            },
-            UpdateExpression="SET Votes = list_append(Votes, :new_votes)",
-            ExpressionAttributeValues={
-                ':new_votes': list_votes,
-            },
-            ReturnValues="UPDATED_NEW"
-        )
+        # res = mps_table.update_item(
+        #     Key={
+        #         'MPElectionYear': 2019,
+        #         'MemberId': int(mp_id)
+        #     },
+        #     UpdateExpression="SET Votes = list_append(Votes, :new_votes)",
+        #     ExpressionAttributeValues={
+        #         ':new_votes': list_votes,
+        #     },
+        #     ReturnValues="UPDATED_NEW"
+        # )
+        #
+        # if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+        #     logging.error('failed to update votes for mp with id', mp_id)
 
-        if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-            logging.error('failed to update votes for mp with id', mp_id)
-
+    logging.info('WOULD HAVE UPDATED WITH', mps_to_votes)
 
 def download_votes_per_division(divisions: List[Dict]) -> None:
     def has_good_attendance(division: dict) -> dict:

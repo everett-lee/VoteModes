@@ -183,5 +183,5 @@ tfplan
 # Artefacts
 *.zip
 
-#Docker
-push_image.sh
+#Scripts
+*.sh
