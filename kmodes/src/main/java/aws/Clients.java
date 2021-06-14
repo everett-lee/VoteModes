@@ -1,0 +1,4 @@
+package aws;
+
+class Clients {
+}

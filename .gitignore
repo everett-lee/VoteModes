@@ -185,3 +185,6 @@ tfplan
 
 #Scripts
 *.sh
+
+#AWS
+aws-lambda-rie

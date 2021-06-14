@@ -14,11 +14,6 @@ resource "aws_dynamodb_table" "dynamodb-table" {
     type = var.attribute_type_two
   }
 
-  ttl {
-    attribute_name = "TimeToExist"
-    enabled        = false
-  }
-
   tags = {
     Name    = var.tag_name
     Project = "vote-modes"

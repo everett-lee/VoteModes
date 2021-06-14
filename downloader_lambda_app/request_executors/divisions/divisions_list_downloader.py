@@ -13,7 +13,7 @@ TABLE_NAME = 'Divisions'
 def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
     intervals = get_date_intervals(year, month)
     divisions = get_divisions(intervals)
-    logging.info('Downloaded {divisions} divisions'.format(divisions=divisions))
+    logging.info('Downloaded %s divisions', divisions)
     table = get_table(TABLE_NAME)
 
     for division in divisions:
@@ -37,6 +37,5 @@ def download_divisions_list(year: int, month: int, election_year: int) -> List[D
         # if res['ResponseMetadata']['HTTPStatusCode'] != 200:
         #     logging.error('failed to put division', division, 'to database')
 
-
-    logging.info('WOULD HAVE PUT', divisions)
+    logging.info('WOULD HAVE PUT %s', divisions)
     return divisions

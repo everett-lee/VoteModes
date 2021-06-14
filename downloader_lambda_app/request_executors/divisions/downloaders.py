@@ -103,6 +103,6 @@ def get_divisions(intervals: List[Tuple[str, str]]) -> List[Dict]:
         return downloaded_divisions
 
     divisions = make_requests()
-    logging.info('processed', len(divisions), 'divisions')
+    logging.info('processed %s divisions', len(divisions))
 
     return divisions

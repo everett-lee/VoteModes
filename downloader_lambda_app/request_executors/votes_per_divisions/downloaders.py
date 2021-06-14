@@ -28,7 +28,7 @@ def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
     url = '{base_url}{division_id}.json'.format(base_url=URL_GET_DIVISION, division_id=division_id)
     failed_count = 0
 
-    logging.info('downloading division with id', division_id)
+    logging.info('downloading division with id %s', division_id)
 
     res = requests.get(url)
     while failed_count <= 10 and res.status_code != 200:

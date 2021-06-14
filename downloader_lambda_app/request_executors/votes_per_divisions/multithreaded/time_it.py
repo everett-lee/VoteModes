@@ -10,7 +10,7 @@ def timeit(method):
         start_time = time.time()
         result = method(*args, **kwargs)
         end_time = time.time()
-        logging.info(f"{method.__name__} => {(end_time - start_time) * 1000} ms")
+        logging.info("%s => %s ms", method.__name__, ((end_time - start_time) * 1000))
 
         return result
 

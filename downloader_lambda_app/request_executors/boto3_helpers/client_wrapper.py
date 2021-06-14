@@ -5,38 +5,28 @@ import boto3
 
 dynamodb_client = None
 sqs_client = None
+aws_profile = os.getenv('AWS_PROFILE')
 
 
 def get_dynamodb_client() -> Union[object, None]:
-    AWS_PROFILE = os.getenv('AWS_PROFILE')
-    invalid_profile_msg = 'Unable to get Boto client, AWS profile: {profile} is not valid'.format(profile=AWS_PROFILE)
-
-    if AWS_PROFILE == 'localstack':
+    if aws_profile == 'localstack':
         dynamodb_client = boto3.session.Session(profile_name='localstack').resource('dynamodb',
                                                                                     endpoint_url='http://localhost:4566')
 
-    elif AWS_PROFILE == 'votemodes':
-        dynamodb_client = boto3.resource('dynamodb')
-
     else:
-        raise RuntimeError(invalid_profile_msg)
+        dynamodb_client = boto3.resource('dynamodb')
 
     return dynamodb_client
 
 
 def get_sqs_client() -> Union[object, None]:
     AWS_PROFILE = os.getenv('AWS_PROFILE')
-    invalid_profile_msg = 'Unable to get Boto client, AWS profile: {profile} is not valid'.format(profile=AWS_PROFILE)
 
     if AWS_PROFILE == 'localstack':
         sqs_client = boto3.session.Session(profile_name='localstack').resource('sqs',
                                                                                endpoint_url='http://localhost:4566')
-
-    elif AWS_PROFILE == 'votemodes':
-        sqs_client = boto3.resource('sqs')
-
     else:
-        raise RuntimeError(invalid_profile_msg)
+        sqs_client = boto3.resource('sqs')
 
     return sqs_client
 

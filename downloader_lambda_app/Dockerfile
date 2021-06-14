@@ -4,7 +4,7 @@ COPY requirements.txt /tmp
 RUN pip install -r /tmp/requirements.txt
 
 COPY __init__.py ./
-COPY downloader_lambda.py ./
-COPY request_executors/ ./
+COPY downloader_lambda.py  ./
+COPY request_executors/ ./request_executors/
 
 CMD ["downloader_lambda.handler"]

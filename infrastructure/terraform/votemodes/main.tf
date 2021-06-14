@@ -37,12 +37,10 @@ module lambda_repo {
   tag_name = "lambda_downloader_repo"
 }
 
-//
-//module lambda {
-//  source = "../modules/lambda"
-//  function_name = "DownloaderLambda"
-//  file_name = "downloader_lambda_app.zip"
-//  handler = "downloader_lambda_app.lambda_handler"
-//  tag_name = "downloader_lambda_app"
-//  queue_name = "LambdaQueue"
-//}
+module lambda {
+  source = "../modules/lambda"
+  function_name = "DownloaderLambda"
+  tag_name = "downloader_lambda_app"
+  queue_name = "LambdaQueue"
+  image_uri = "540073770261.dkr.ecr.eu-west-1.amazonaws.com/lambda_downloader_repo:latest"
+}
