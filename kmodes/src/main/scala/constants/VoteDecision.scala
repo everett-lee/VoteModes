@@ -1,6 +1,6 @@
 package constants
 
-object VoteDecisions extends Enumeration {
-  type VoteDecisions = Value
+object VoteDecision extends Enumeration {
+  type VoteDecision = Value
   val Aye, No, NoAttend = Value
 }
