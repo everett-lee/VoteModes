@@ -1,4 +1,5 @@
 import json
+
 import requests
 
 URL_GET_MPS_BASE = 'http://data.parliament.uk/membersdataplatform/services/mnis/members/'
@@ -10,7 +11,8 @@ END_DATE = '2021-05-03'
 def get_fields_of_interest(mp: dict) -> dict:
     return {
         'MemberId': int(mp['@Member_Id']),
-        'Name': mp['DisplayAs']
+        'Name': mp['DisplayAs'],
+        'Party': mp['Party']['#text']
     }
 
 

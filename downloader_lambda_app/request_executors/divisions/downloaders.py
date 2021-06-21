@@ -20,7 +20,6 @@ def increment_date(old_date: str, dates_memo: Set[str]) -> str:
 
     old_date_str = dateutil.parser.parse(old_date)
     incremented_date = old_date_str + timedelta(seconds=1)
-    print('old', old_date, 'new', incremented_date.strftime("%Y-%m-%dT%H:%M:%S%z"))
     return increment_date(incremented_date.strftime("%Y-%m-%dT%H:%M:%S%z"), dates_memo)
 
 
@@ -51,7 +50,7 @@ def download_divisions_list_to_file() -> None:
         intervals = get_date_intervals(2020, month)
         divisions += get_divisions(intervals)
 
-    for month in [1, 2, 3, 4]:
+    for month in [1, 2, 3, 4, 5]:
         intervals = get_date_intervals(2021, month)
         divisions += get_divisions(intervals)
 

@@ -4,7 +4,7 @@ import awscala.Region
 import awscala.dynamodbv2.{DynamoDB, Item, Table}
 import com.amazonaws.services.dynamodbv2.model.Condition
 
-object DynamodbClient {
+class DynamodbClient extends DynamodbClientTrait {
   val defaultRegion = Region.Ireland
   implicit val dynamoDB = DynamoDB.at(defaultRegion)
 

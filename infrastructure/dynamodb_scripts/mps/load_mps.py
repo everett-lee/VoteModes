@@ -24,13 +24,15 @@ def put_data(table):
 
         for mp in mps:
             member_id = mp['MemberId']
-            name = mp['Name']
+            mp_name = mp['Name']
+            party = mp['Party']
 
             table.put_item(
                 Item={
                     'MPElectionYear': 2019,
                     'MemberId': member_id,
-                    'Name': name,
+                    'Name': mp_name,
+                    'Party': party,
                     'Votes': []
                 }
             )

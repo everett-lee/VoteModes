@@ -21,8 +21,8 @@ aws dynamodb query \
 
 aws dynamodb query \
     --table-name MPs \
-    --key-condition-expression 'MPElectionYear = :election_year and MemberId > :min_id' \
-    --expression-attribute-values '{":election_year": {"N": "2019"}, ":min_id": {"N": "50"}}' \
+    --key-condition-expression 'MPElectionYear = :election_year and MemberId = :id' \
+    --expression-attribute-values '{":election_year": {"N": "2019"}, ":id": {"N": "8"}}' \
     --endpoint-url http://localhost:4566
 
 aws lambda invoke \

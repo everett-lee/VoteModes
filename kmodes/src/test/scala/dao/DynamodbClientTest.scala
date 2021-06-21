@@ -1,48 +1,46 @@
 package dao
 
-import constants.VoteDecision
-import constants.VoteDecision.VoteDecision
+import constants.VoteDecision.{Aye, No, NoAttend, VoteDecision}
+import dao.DynamodbClientTest.createVotes
 import dao.helpers.DataFactory
 import model.{MPWithVotes, VotePair}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.MockitoSugar.{when, withObjectMocked}
+import org.mockito.MockitoSugar.{mock, when}
 import org.scalatest.flatspec.AnyFlatSpec
+import service.DynamodbVotesFetcher
 
 object DynamodbClientTest {
   def createVotes(votes: Seq[VoteDecision]): Seq[VotePair] = {
     for {
       (vote, i) <- votes.zipWithIndex
-    } yield VotePair(i, vote)
+    } yield VotePair(i + 1, vote)
   }
-
-  
 }
 
-class DynamodbClientTest extends AnyFlatSpec  {
+class DynamodbClientTest extends AnyFlatSpec {
 
 
   "A votePair" should "be created" in {
-    withObjectMocked[DynamodbClient.type] {
-      when(DynamodbClient.scan(any, any)) thenReturn Seq()
+    // given
+    val votesOne = createVotes(Seq(No, NoAttend, Aye))
+    val mpWithVotesOne = MPWithVotes(1, "Mr B Limond", "SNP", votesOne)
 
-    }
+    val votesTwo = createVotes(Seq(No, No, NoAttend))
+    val mpWithVoteTwo = MPWithVotes(2, "Teddy R", "Tories", votesTwo)
 
-    val voteOne = VotePair(1, VoteDecision.No)
-    val voteTwo = VotePair(2, VoteDecision.NoAttend)
-    val voteThree = VotePair(3, VoteDecision.Aye)
+    val items = DataFactory.getItems(Seq(mpWithVotesOne, mpWithVoteTwo))
 
-    val votesOne = Seq(voteOne, voteTwo, voteThree)
-    val mpWithVotesOne = MPWithVotes(1, "Mr B Limmond", votesOne)
+    val mockedDynamodbClient = mock[DynamodbClientTrait]
+    val votesFetcher = new DynamodbVotesFetcher(mockedDynamodbClient)
+    
+    // when
+    when(mockedDynamodbClient.scan(any, any)) thenReturn items
+    val votesResult = votesFetcher.getVotes(2019)
 
-    val voteFour = VotePair(1, VoteDecision.Aye)
-    val voteFive = VotePair(2, VoteDecision.Aye)
-    val voteSix = VotePair(3, VoteDecision.NoAttend)
-
-    val votesTwo = Seq(voteFour, voteFive, voteSix)
-    val mpWithVoteTwo = MPWithVotes(2, "Teddy R", votesTwo)
-
-    val res = DataFactory.getItems(Seq(mpWithVotesOne, mpWithVoteTwo))
-    println(res)
+    // then
+    assert(votesResult.length == 2)
+    assert(votesResult(0).votes == votesOne)
+    assert(votesResult(1).votes == votesTwo)
   }
 
 }
