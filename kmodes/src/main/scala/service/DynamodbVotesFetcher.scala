@@ -51,7 +51,8 @@ object DynamodbVotesFetcher {
       .head.value.l
       .map(value => Map("DivisionId" -> value.getM.get("DivisionId"), "Vote" -> value.getM.get("Vote")))
       .map(valueMap => mapValuesToVotePair(valueMap))
+      .toList
 
-    MPWithVotes(id, name, party, votes )
+    MPWithVotes(id, name, party, votes)
   }
 }
