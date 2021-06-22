@@ -36,9 +36,9 @@ class KModesMainTest extends AnyWordSpec {
   "The calculateDistance method" should {
     // given
     val votesOne = List(VotePair(1, Aye), VotePair(2, No), VotePair(3, NoAttend))
-    val votesTwo = List(VotePair(2, No), VotePair(2, No), VotePair(3, No))
-    val votesThree = List(VotePair(3, No), VotePair(2, No), VotePair(3, Aye))
-    val votesFour = List(VotePair(4, No))
+    val votesTwo = List(VotePair(1, No), VotePair(2, No), VotePair(3, No))
+    val votesThree = List(VotePair(1, No), VotePair(2, No), VotePair(3, Aye))
+    val votesFour = List(VotePair(1, No))
 
     "Return no distance form itself" in {
       // when
