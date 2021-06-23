@@ -1,13 +1,12 @@
 package dao.kModes
 
 import constants.VoteDecision.{Aye, No, NoAttend}
-import kModes.KModesMain
+import kModes.CentroidsHelperMain
 import model.{MPWithVotes, VotePair}
 import org.scalatest.wordspec.AnyWordSpec
 
-
-class KModesMainTest extends AnyWordSpec {
-  val KModes = new KModesMain()
+class CentroidsHelperMainTest extends AnyWordSpec {
+  val centroidsHelper = new CentroidsHelperMain()
 
   val votesOne = List(VotePair(1, Aye), VotePair(2, No), VotePair(3, NoAttend), VotePair(4, Aye), VotePair(5, No))
   val votesTwo = List(VotePair(1, Aye), VotePair(2, NoAttend), VotePair(3, No), VotePair(4, NoAttend), VotePair(5, NoAttend))
@@ -41,7 +40,7 @@ class KModesMainTest extends AnyWordSpec {
     // given
     "Initialise an array of K centroids" in {
       // when
-      val centroids = KModes.initCentroids(MPs, 3)
+      val centroids = centroidsHelper.initCentroids(MPs, 3)
 
       // then
       assert(centroids.size == 3)
@@ -50,7 +49,7 @@ class KModesMainTest extends AnyWordSpec {
 
     "Throw when K > length" in {
       assertThrows[IllegalArgumentException] {
-        KModes.initCentroids(MPs, MPs.size + 1)
+        centroidsHelper.initCentroids(MPs, MPs.size + 1)
       }
     }
   }
@@ -61,7 +60,7 @@ class KModesMainTest extends AnyWordSpec {
 
     "Return no distance form itself" in {
       // when
-      val distance = KModes.calculateDistance(votesOne, votesOne)
+      val distance = centroidsHelper.calculateDistance(votesOne, votesOne)
 
       // then
       assert(distance == 0)
@@ -69,7 +68,7 @@ class KModesMainTest extends AnyWordSpec {
 
     "Return distance of four" in {
       // when
-      val distance = KModes.calculateDistance(votesOne, votesTwo)
+      val distance = centroidsHelper.calculateDistance(votesOne, votesTwo)
 
       // then
       assert(distance == 4)
@@ -77,7 +76,7 @@ class KModesMainTest extends AnyWordSpec {
 
     "Return distance of five" in {
       // when
-      val distance = KModes.calculateDistance(votesTwo, votesThree)
+      val distance = centroidsHelper.calculateDistance(votesTwo, votesThree)
 
       // then
       assert(distance == 5)
@@ -85,7 +84,7 @@ class KModesMainTest extends AnyWordSpec {
 
     "Return distance of two" in {
       // when
-      val distance = KModes.calculateDistance(votesFour, votesSeven)
+      val distance = centroidsHelper.calculateDistance(votesFour, votesSeven)
 
       // then
       assert(distance == 2)
@@ -93,7 +92,7 @@ class KModesMainTest extends AnyWordSpec {
 
     "Throw when List sizes mismatched" in {
       assertThrows[IllegalArgumentException] {
-        KModes.calculateDistance(votesOne, votesShort)
+        centroidsHelper.calculateDistance(votesOne, votesShort)
       }
     }
   }
@@ -102,65 +101,65 @@ class KModesMainTest extends AnyWordSpec {
 
     "Assign votesOne to CentroidOne" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(0), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(0), centroids)
       // then
       assert(centroid == -1)
     }
 
     "Assign votesTwo to centroidTwo or centroidThree" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(1), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(1), centroids)
       // then
       assert(centroid == -2 || centroid == -3)
     }
 
     "Assign votesThree to centroidThree" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(2), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(2), centroids)
       // then
       assert(centroid == -3)
     }
 
     "Assign votesFour to centroidTwo" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(3), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(3), centroids)
       // then
       assert(centroid == -2)
     }
 
     "Assign votesFive to centroidThree" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(4), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(4), centroids)
       // then
       assert(centroid == -3)
     }
 
     "Assign votesSix to centroidOne" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(5), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(5), centroids)
       // then
       assert(centroid == -1)
     }
 
     "Assign votesSeven to centroidTwo" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(6), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(6), centroids)
       // then
       assert(centroid == -2)
     }
 
     "Assign votesEight to centroidOne" in {
       // when
-      val centroid = KModes.calculateClosestCentroid(MPs(7), centroids)
+      val centroid = centroidsHelper.calculateClosestCentroid(MPs(7), centroids)
       // then
       assert(centroid == -1)
     }
   }
 
   "The groupByCentroids method" should {
-    "Group the MPs correctly" in  {
+    "Group the MPs correctly" in {
       // when
-      val grouped = KModes.groupByCentroid(MPs, centroids)
+      val grouped = centroidsHelper.groupByCentroid(MPs, centroids)
       // then
       assert(grouped(-1) == Vector(MPs(0), MPs(5), MPs(7)))
       assert(grouped(-2) == Vector(MPs(1), MPs(3), MPs(6)))
@@ -181,6 +180,5 @@ class KModesMainTest extends AnyWordSpec {
     println(out)
     println(items)
     println(items.groupBy(identity).maxBy(_._2.size)._1)
-
   }
 }
