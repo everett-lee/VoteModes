@@ -32,12 +32,12 @@ def get_sqs_client() -> Union[object, None]:
 
 
 def get_table(table_name: str) -> object:
-    dynamodb = get_dynamodb_client()
+    dynamodb = dynamodb_client if dynamodb_client else get_dynamodb_client()
 
     return dynamodb.Table(table_name)
 
 
 def get_queue(queue_url: str) -> object:
-    sqs = get_sqs_client()
+    sqs = sqs_client if sqs_client else get_sqs_client()
 
     return sqs.Queue(queue_url)

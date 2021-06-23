@@ -29,5 +29,18 @@ class KModesMain extends KModes {
     }
   }
 
+  def calculateClosestCentroid(MPWithVotes: MPWithVotes, centroids: Vector[MPWithVotes]): Int = {
+    centroids
+      .map(centroid => (centroid, calculateDistance(MPWithVotes.votes, centroid.votes)))
+      .minBy(_._2)._1.id // the id of the closest centroid
+  }
+
+  def groupByCentroid(MPsWithVotes: Vector[MPWithVotes],
+                       centroids: Vector[MPWithVotes]): Map[Int, Vector[MPWithVotes]] = {
+
+    MPsWithVotes.groupBy(mp => calculateClosestCentroid(mp, centroids))
+  }
+
+
   override def compute(MPsWithVotes: Vector[MPWithVotes]): Map[Int, MP] = ???
 }

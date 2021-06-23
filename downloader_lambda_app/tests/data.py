@@ -140,6 +140,7 @@ def get_divisions_first():
         }
     ]
 
+
 def get_divisions_second():
     return [
         {
@@ -212,6 +213,7 @@ def get_divisions_second():
             "RemoteVotingEnd": None
         }
     ]
+
 
 def get_mps():
     return [
@@ -479,6 +481,7 @@ def get_divisions_with_votes_first():
             "RemoteVotingEnd": None
         }
     ]
+
 
 def get_divisions_with_votes_second():
     return [{
