@@ -1,18 +1,18 @@
 import json
 import os
+import time
 from datetime import date
 from unittest import TestCase, mock
 
 import boto3
-import time
 
-from data import get_divisions_first
-from data import get_divisions_second
-from data import get_divisions_with_votes_first
-from data import get_divisions_with_votes_second
-from data import get_mps
-from downloader_lambda_app.downloader_lambda import handler
-from downloader_lambda_app.tests.mock_response_helper.mock_response_helper import get_mock_response
+from .data_loader import get_divisions_first
+from .data_loader import get_divisions_second
+from .data_loader import get_divisions_with_votes_first
+from .data_loader import get_divisions_with_votes_second
+from .data_loader import get_mps
+from .mock_response_helper.mock_response_helper import get_mock_response
+from ..downloader_lambda import handler
 
 localhost_queue_url = "http://localhost:4566/000000000000/LambdaQueue"
 
@@ -44,13 +44,14 @@ class IntegrationTests(TestCase):
             self.assertEqual(len(mp['Votes']), 2)
 
         mps_as_map = {int(mp['MemberId']): mp for mp in saved_mps}
+
         self.assertEqual(len(mps_as_map), 6)
-        self.assert_votes(mps_as_map[172]['Votes'], 'Aye', 'No', None)
-        self.assert_votes(mps_as_map[4057]['Votes'], 'Aye', 'NoAttend', None)
-        self.assert_votes(mps_as_map[39]['Votes'], 'Aye', 'Aye', None)
-        self.assert_votes(mps_as_map[140]['Votes'], 'No', 'Aye', None)
-        self.assert_votes(mps_as_map[4362]['Votes'], 'No', 'No', None)
-        self.assert_votes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend', None)
+        self.assert_votes(mps_as_map[172]['Votes'], 'Aye', 'No')
+        self.assert_votes(mps_as_map[4057]['Votes'], 'Aye', 'NoAttend')
+        self.assert_votes(mps_as_map[39]['Votes'], 'Aye', 'Aye')
+        self.assert_votes(mps_as_map[140]['Votes'], 'No', 'Aye')
+        self.assert_votes(mps_as_map[4362]['Votes'], 'No', 'No')
+        self.assert_votes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend')
 
         # second run
         handler(None, None)
@@ -77,13 +78,14 @@ class IntegrationTests(TestCase):
         time.sleep(5)
         self.assert_queue()
 
-    def assert_votes(self, mp_votes, first_vote, second_vote, third_vote):
+    def assert_votes(self, mp_votes, first_vote, second_vote, third_vote=None):
+        mp_votes = sorted(mp_votes, key=lambda mp_votes: mp_votes['DivisionId'] * -1)
         self.assertEqual(mp_votes[0]['Vote'], first_vote)
         self.assertEqual(mp_votes[1]['Vote'], second_vote)
 
         if (third_vote):
             self.assertEqual(mp_votes[2]['Vote'], third_vote)
-            
+
     def assert_queue(self):
         today = date.today()
         year = today.year
@@ -92,7 +94,7 @@ class IntegrationTests(TestCase):
         sqs = self.get_sqs().Queue(localhost_queue_url)
         messages = sqs.receive_messages()
         self.assertEqual(len(messages), 1)
-        self.assertEqual(messages[0].body, "Processed divisions for {month} {year}".format(month=month, year=year))
+        self.assertEqual(messages[0].body, "Processed divisions for {month}-{year}".format(month=month, year=year))
 
     def set_mock_responses(self, mock_get):
         mock_divisions_with_votes_first = get_divisions_with_votes_first()
@@ -111,7 +113,6 @@ class IntegrationTests(TestCase):
                                 mock_response_divisions_with_votes_1, mock_response_divisions_with_votes_2,
                                 mock_response_second_divisions, mock_response_empty, mock_response_empty,
                                 mock_response_divisions_with_votes_3]
-
 
     def set_up_tables(self):
         self.delete_tables()
@@ -225,5 +226,5 @@ class IntegrationTests(TestCase):
     def get_sqs(self):
         if os.getenv('AWS_PROFILE') == 'localstack' and self.sqs is None:
             self.sqs = boto3.session.Session(profile_name='localstack').resource('sqs',
-                                                                                      endpoint_url='http://localhost:4566')
+                                                                                 endpoint_url='http://localhost:4566')
         return self.sqs

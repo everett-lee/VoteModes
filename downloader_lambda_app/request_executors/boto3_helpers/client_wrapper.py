@@ -5,14 +5,13 @@ import boto3
 
 dynamodb_client = None
 sqs_client = None
-aws_profile = os.getenv('AWS_PROFILE')
-
 
 def get_dynamodb_client() -> Union[object, None]:
+    aws_profile = os.getenv('AWS_PROFILE')
+
     if aws_profile == 'localstack':
         dynamodb_client = boto3.session.Session(profile_name='localstack').resource('dynamodb',
                                                                                     endpoint_url='http://localhost:4566')
-
     else:
         dynamodb_client = boto3.resource('dynamodb')
 
@@ -20,9 +19,9 @@ def get_dynamodb_client() -> Union[object, None]:
 
 
 def get_sqs_client() -> Union[object, None]:
-    AWS_PROFILE = os.getenv('AWS_PROFILE')
+    aws_profile = os.getenv('AWS_PROFILE')
 
-    if AWS_PROFILE == 'localstack':
+    if aws_profile == 'localstack':
         sqs_client = boto3.session.Session(profile_name='localstack').resource('sqs',
                                                                                endpoint_url='http://localhost:4566')
     else:

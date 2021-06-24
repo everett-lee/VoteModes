@@ -6,10 +6,14 @@ variable "tag_name" {
   type = string
 }
 
-variable "queue_name" {
+variable "image_uri" {
   type = string
 }
 
-variable "image_uri" {
+variable "queue_url" {
+  type = string
+}
+
+variable "queue_arn" {
   type = string
 }

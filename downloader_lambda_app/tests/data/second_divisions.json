@@ -1,0 +1,71 @@
+[
+    {
+        "DivisionId": -3,
+        "Date": "2021-05-28T16:20:00",
+        "PublicationUpdated": "2021-05-28T16:20:00",
+        "Number": 444,
+        "IsDeferred": false,
+        "EVELType": "",
+        "EVELCountry": "",
+        "Title": "Give Lee free money bill",
+        "AyeCount": 358,
+        "NoCount": 269,
+        "DoubleMajorityAyeCount": null,
+        "DoubleMajorityNoCount": null,
+        "AyeTellers": [
+            {
+                "MemberId": 4033,
+                "Name": "David Rutley",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Macclesfield",
+                "ListAs": "Rutley, David",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 3992,
+                "Name": "James Morris",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Halesowen and Rowley Regis",
+                "ListAs": "Morris, James",
+                "ProxyName": null
+            }
+        ],
+        "NoTellers": [
+            {
+                "MemberId": 4378,
+                "Name": "Colleen Fletcher",
+                "Party": "Labour",
+                "SubParty": null,
+                "PartyColour": "ff0000",
+                "PartyAbbreviation": "Lab",
+                "MemberFrom": "Coventry North East",
+                "ListAs": "Fletcher, Colleen",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 4610,
+                "Name": "Bambos Charalambous",
+                "Party": "Labour",
+                "SubParty": null,
+                "PartyColour": "ff0000",
+                "PartyAbbreviation": "Lab",
+                "MemberFrom": "Enfield, Southgate",
+                "ListAs": "Charalambous, Bambos",
+                "ProxyName": null
+            }
+        ],
+        "Ayes": [],
+        "Noes": [],
+        "FriendlyDescription": null,
+        "FriendlyTitle": null,
+        "NoVoteRecorded": [],
+        "RemoteVotingStart": null,
+        "RemoteVotingEnd": null
+    }
+]

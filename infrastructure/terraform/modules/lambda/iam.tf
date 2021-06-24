@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "sqs_policy" {
       "sqs:SendMessage",
     ]
     resources = [
-      aws_sqs_queue.lambda_queue.arn,
+      var.queue_arn,
     ]
   }
 }

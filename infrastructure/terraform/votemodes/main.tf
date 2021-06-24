@@ -37,10 +37,19 @@ module lambda_repo {
   tag_name = "lambda_downloader_repo"
 }
 
+
+module sqs {
+  source = "../modules/sqs"
+  queue_name = "LambdaQueue"
+  tag_name = "lambda_queue"
+}
+
 module lambda {
   source = "../modules/lambda"
   function_name = "DownloaderLambda"
   tag_name = "downloader_lambda_app"
   queue_name = "LambdaQueue"
   image_uri = "540073770261.dkr.ecr.eu-west-1.amazonaws.com/lambda_downloader_repo:latest"
+  queue_arn = module.sqs.queue_arn
+  queue_url = module.sqs.queue_url
 }

@@ -13,7 +13,7 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      QUEUE_URL = aws_sqs_queue.lambda_queue.id
+      QUEUE_URL = var.queue_url
     }
   }
 }

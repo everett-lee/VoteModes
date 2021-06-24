@@ -1,13 +1,12 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
+from .data_loader import get_divisions_first
+from .mock_response_helper.mock_response_helper import get_mock_response
 from ..request_executors.divisions.divisions_list_downloader import get_date_intervals
 from ..request_executors.divisions.downloaders import get_fields_of_interest, get_divisions, increment_date
-from .data import get_divisions_first
-from .mock_response_helper.mock_response_helper import get_mock_response
 
 division = get_divisions_first()[0]
-
 
 class TestGetDateIntervals(TestCase):
     def test_jan_interval_has_correct_range(self):

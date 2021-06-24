@@ -38,11 +38,8 @@ module mps_table {
   tag_name = "mps-table"
 }
 
-module lambda {
-  source = "../modules/lambda"
-  function_name = "DownloaderLambda"
-  file_name = "downloader_lambda_app.zip"
-  handler = "downloader_lambda_app.downloader_lambda.lambda_handler"
-  tag_name = "downloader_lambda"
+module sqs {
+  source = "../modules/sqs"
   queue_name = "LambdaQueue"
+  tag_name = "lambda_queue"
 }

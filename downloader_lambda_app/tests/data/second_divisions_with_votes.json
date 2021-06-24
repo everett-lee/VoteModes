@@ -1,0 +1,125 @@
+[
+    {
+        "DivisionId": -3,
+        "Date": "2021-05-28T16:20:00",
+        "PublicationUpdated": "2021-05-28T16:20:00",
+        "Number": 444,
+        "IsDeferred": false,
+        "EVELType": "",
+        "EVELCountry": "",
+        "Title": "Give Lee free money bill",
+        "AyeCount": 358,
+        "NoCount": 269,
+        "DoubleMajorityAyeCount": null,
+        "DoubleMajorityNoCount": null,
+        "AyeTellers": [
+            {
+                "MemberId": 4369,
+                "Name": "Tom Pursglove",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Corby",
+                "ListAs": "Pursglove, Tom",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 3992,
+                "Name": "James Morris",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Halesowen and Rowley Regis",
+                "ListAs": "Morris, James",
+                "ProxyName": null
+            }
+        ],
+        "NoTellers": [
+            {
+                "MemberId": 4456,
+                "Name": "Jeff Smith",
+                "Party": "Labour",
+                "SubParty": null,
+                "PartyColour": "ff0000",
+                "PartyAbbreviation": "Lab",
+                "MemberFrom": "Manchester, Withington",
+                "ListAs": "Smith, Jeff",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 4617,
+                "Name": "Matt Western",
+                "Party": "Labour",
+                "SubParty": null,
+                "PartyColour": "ff0000",
+                "PartyAbbreviation": "Lab",
+                "MemberFrom": "Warwick and Leamington",
+                "ListAs": "Western, Matt",
+                "ProxyName": null
+            }
+        ],
+        "Ayes": [
+            {
+                "MemberId": 172,
+                "Name": "Ms Ada Lovelace",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Maidenhead",
+                "ListAs": "Ms Ada Lovelace",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 4057,
+                "Name": "Ms Dina Mite",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Colchester",
+                "ListAs": "Ms Dina Mite",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 39,
+                "Name": "Mr Stephen Morrissey",
+                "Party": "Conservative",
+                "SubParty": null,
+                "PartyColour": "0000ff",
+                "PartyAbbreviation": "Con",
+                "MemberFrom": "Wokingham",
+                "ListAs": "Mr Stephen Morrissey",
+                "ProxyName": null
+            }
+        ],
+        "Noes": [
+            {
+                "MemberId": 140,
+                "Name": "Captain Ahab",
+                "Party": "Labour",
+                "SubParty": null,
+                "PartyColour": "ff0000",
+                "PartyAbbreviation": "Lab",
+                "MemberFrom": "Hayes and Harlington",
+                "ListAs": "Captain Ahab",
+                "ProxyName": null
+            },
+            {
+                "MemberId": 4362,
+                "Name": "Mr Mason Mount",
+                "Party": "Labour",
+                "SubParty": null,
+                "PartyColour": "ff0000",
+                "PartyAbbreviation": "Lab",
+                "MemberFrom": "Leyton and Wanstead",
+                "ListAs": "Mr Mason Mount",
+                "ProxyName": "Lampard's Son"
+            }
+        ],
+        "RemoteVotingStart": null,
+        "RemoteVotingEnd": null
+    }
+]

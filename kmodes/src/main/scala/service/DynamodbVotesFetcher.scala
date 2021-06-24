@@ -18,8 +18,8 @@ class DynamodbVotesFetcher(dynamodbClient: DynamodbClientTrait) extends VotesFet
 }
 
 object DynamodbVotesFetcher {
-  def apply(dynamodbClient: DynamodbClientTrait): DynamodbVotesFetcher = {
-    new DynamodbVotesFetcher(new DynamodbClient())
+  def apply(dynamodbClient: DynamodbClientTrait = new DynamodbClient()): DynamodbVotesFetcher = {
+    new DynamodbVotesFetcher(dynamodbClient)
   }
 
   def mapValuesToVotePair(inMap: Map[String, com.amazonaws.services.dynamodbv2.model.AttributeValue]): VotePair = {
