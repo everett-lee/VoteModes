@@ -48,7 +48,12 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
           val heads = votes.map(inList => inList.head)
           val tails = votes.map(inList => inList.tail)
 
-          val mode = heads.groupBy(identity).maxBy(_._2.size)._1
+
+
+          val mode = heads.groupBy(identity)
+             .maxBy(groupedModes => groupedModes._2.size
+               + (groupedModes._1.voteDecision.toString.length / 100.0)) // add this as a tiebreaker
+            ._1
           recursiveHelper(tails, mode :: res)
         }
       }
