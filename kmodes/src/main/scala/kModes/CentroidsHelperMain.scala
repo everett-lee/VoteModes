@@ -4,7 +4,7 @@ import model.{MPWithVotes, VotePair}
 import scala.annotation.tailrec
 
 class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[VotePair]] {
-   def initCentroids(MPsWithVotes: Vector[MPWithVotes], K: Int): Vector[MPWithVotes] = {
+  override def initCentroids(MPsWithVotes: Vector[MPWithVotes], K: Int): Vector[MPWithVotes] = {
     require(K <= MPsWithVotes.size, f"K:$K%d is greater than input vector size")
 
     (0 until K)
@@ -14,7 +14,7 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
   }
 
   @tailrec
-  final def calculateDistance(votes: List[VotePair], centroid: List[VotePair], acc: Int = 0): Int = {
+  final override def calculateDistance(votes: List[VotePair], centroid: List[VotePair], acc: Int = 0): Int = {
     require(votes.size == centroid.size, "Vote sizes must match")
 
     votes match {
@@ -26,18 +26,38 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
     }
   }
 
-  def calculateClosestCentroid(MPWithVotes: MPWithVotes, centroids: Vector[MPWithVotes]): Int = {
+  override def calculateClosestCentroid(MPWithVotes: MPWithVotes, centroids: Vector[MPWithVotes]): Int = {
     centroids
       .map(centroid => (centroid, calculateDistance(MPWithVotes.votes, centroid.votes)))
       .minBy(_._2)._1.id // the id of the closest centroid
   }
 
-  def groupByCentroid(MPsWithVotes: Vector[MPWithVotes],
+  override def groupByCentroid(MPsWithVotes: Vector[MPWithVotes],
                       centroids: Vector[MPWithVotes]): Map[Int, Vector[MPWithVotes]] = {
 
     MPsWithVotes.groupBy(mp => calculateClosestCentroid(mp, centroids))
   }
 
-  override def calculateCentroids(groupedMPs: Map[Int, Vector[MPWithVotes]]): Vector[MPWithVotes] = ???
+  override def calculateCentroid(mpsWithVotes: Vector[MPWithVotes], centroidId: Int): MPWithVotes = {
+
+    @tailrec
+    def recursiveHelper(votes: List[List[VotePair]], res: List[VotePair]): List[VotePair] = {
+      votes.head match {
+        case Nil => res
+        case x :: xs => {
+          val heads = votes.map(inList => inList.head)
+          val tails = votes.map(inList => inList.tail)
+
+          val mode = heads.groupBy(identity).maxBy(_._2.size)._1
+          recursiveHelper(tails, mode :: res)
+        }
+      }
+    }
+
+    val votes = mpsWithVotes.map(mp => mp.votes).toList
+    val centroidVotes = recursiveHelper(votes, List())
+    MPWithVotes(centroidId, "","", centroidVotes.reverse)
+  }
+
 
 }

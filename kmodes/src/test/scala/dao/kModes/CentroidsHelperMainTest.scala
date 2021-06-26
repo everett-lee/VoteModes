@@ -167,7 +167,19 @@ class CentroidsHelperMainTest extends AnyWordSpec {
     }
   }
 
-  "Do shit" in {
+  "The groupByCentroids method" should {
+    val grouped = centroidsHelper.groupByCentroid(MPs, centroids)
+
+
+    "Return the correct centroid for the first group" in {
+      // when
+      val newCentroid = centroidsHelper.calculateCentroid(grouped(-1), -1)
+      // then
+      assert(newCentroid ==  MPWithVotes(-1, "", "",
+        List(VotePair(1, No), VotePair(2, No), VotePair(3, No), VotePair(4, Aye), VotePair(5, NoAttend))))
+    }
+
+
     val a = List("B", "S", "T", "Y")
     val b = List("A", "B", "C", "D")
     val c = List("B", "Circle", "Triangle", "Rhombus")
