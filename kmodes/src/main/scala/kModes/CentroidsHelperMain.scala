@@ -5,8 +5,6 @@ import scala.annotation.tailrec
 
 class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[VotePair]] {
   override def initCentroids(MPsWithVotes: Vector[MPWithVotes], K: Int): Vector[MPWithVotes] = {
-    require(K <= MPsWithVotes.size, f"K:$K%d is greater than input vector size")
-
     (0 until K)
       .map(n => randomGenerator.nextInt(MPsWithVotes.size))
       .map(index => MPsWithVotes(index))
@@ -47,13 +45,12 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
         case x :: xs => {
           val heads = votes.map(inList => inList.head)
           val tails = votes.map(inList => inList.tail)
-
-
-
           val mode = heads.groupBy(identity)
-             .maxBy(groupedModes => groupedModes._2.size
-               + (groupedModes._1.voteDecision.toString.length / 100.0)) // add this as a tiebreaker
-            ._1
+            .maxBy({
+              case (votePair, votes) =>
+                votes.size + votePair.voteDecision.toString.length / 100.0 // add this as a tiebreaker
+            })._1
+
           recursiveHelper(tails, mode :: res)
         }
       }

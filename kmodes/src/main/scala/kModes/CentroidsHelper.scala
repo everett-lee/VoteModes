@@ -15,5 +15,5 @@ trait CentroidsHelper[A <: Seq[MP], B <: Seq[VotePair]] {
 
   def groupByCentroid(MPsWithVotes: A, centroids: A): Map[Int, A]
 
-  def calculateCentroid(groupedMPs: A, centroidId: Int): MP
+  def calculateCentroid(groupedMPs: A, centroidId: Int): MPWithVotes
 }
