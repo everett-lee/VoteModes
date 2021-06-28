@@ -1,4 +1,4 @@
-package dao.kModes
+package kModes
 
 import constants.VoteDecision.{Aye, No, NoAttend}
 import model.{MPWithVotes, VotePair}

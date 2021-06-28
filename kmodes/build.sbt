@@ -14,7 +14,7 @@ lazy val root = (project in file("."))
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.9"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
 libraryDependencies += "org.scalatestplus" %% "mockito-3-4" % "3.2.9.0" % "test"
-libraryDependencies += "org.mockito" %% "mockito-scala" % "1.16.37" % Test
+libraryDependencies += "org.mockito" %% "mockito-scala" % "1.16.37" % "test"
 libraryDependencies ++= Seq(
   "com.github.seratch" %% "awscala-dynamodb" % "0.9.+",
   "com.github.seratch" %% "awscala-s3" % "0.9.+",

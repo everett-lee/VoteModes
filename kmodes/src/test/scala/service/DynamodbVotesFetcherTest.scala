@@ -1,14 +1,13 @@
-package dao.service
+package service
 
 import constants.VoteDecision.{Aye, No, NoAttend, VoteDecision}
 import dao.DynamodbClientTrait
-import dao.helpers.DataFactory
-import dao.service.DynamodbVotesFetcherTest.createVotes
+import helpers.DataFactory
 import model.{MPWithVotes, VotePair}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.MockitoSugar.{mock, when}
 import org.scalatest.wordspec.AnyWordSpec
-import service.DynamodbVotesFetcher
+import service.DynamodbVotesFetcherTest.createVotes
 
 object DynamodbVotesFetcherTest {
   def createVotes(votes: Seq[VoteDecision]): List[VotePair] = {
@@ -35,7 +34,7 @@ class DynamodbVotesFetcherTest extends AnyWordSpec {
       val votesFetcher = new DynamodbVotesFetcher(mockedDynamodbClient)
 
       // when
-      when(mockedDynamodbClient.scan(any, any)) thenReturn items
+      when(mockedDynamodbClient.scan(any)) thenReturn items
       val votesResult = votesFetcher.getVotes(2019)
 
       // then

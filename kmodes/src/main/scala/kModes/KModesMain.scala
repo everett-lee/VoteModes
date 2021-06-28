@@ -1,6 +1,6 @@
 package kModes
 
-import model.{MP, MPDetails, MPWithVotes, VotePair}
+import model.{MPDetails, MPWithVotes, VotePair}
 
 import scala.annotation.tailrec
 

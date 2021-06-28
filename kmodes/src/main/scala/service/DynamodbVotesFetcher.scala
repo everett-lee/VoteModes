@@ -11,14 +11,14 @@ import javax.management.InvalidAttributeValueException
 class DynamodbVotesFetcher(dynamodbClient: DynamodbClientTrait) extends VotesFetcher {
 
   override def getVotes(electionYear: Int): Seq[MPWithVotes] = {
-    val items = dynamodbClient.scan("MPs", Seq("MPElectionYear" -> cond.eq(electionYear)))
+    val items = dynamodbClient.scan(Seq("MPElectionYear" -> cond.eq(electionYear)))
 
     items.map(item => attributesToMPWithVotes(item))
   }
 }
 
 object DynamodbVotesFetcher {
-  def apply(dynamodbClient: DynamodbClientTrait = new DynamodbClient()): DynamodbVotesFetcher = {
+  def apply(dynamodbClient: DynamodbClientTrait = new DynamodbClient("MPs")): DynamodbVotesFetcher = {
     new DynamodbVotesFetcher(dynamodbClient)
   }
 

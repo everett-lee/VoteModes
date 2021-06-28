@@ -1,4 +1,4 @@
-package dao.helpers
+package helpers
 
 import awscala.dynamodbv2.{Attribute, AttributeValue, Item}
 import model.MPWithVotes

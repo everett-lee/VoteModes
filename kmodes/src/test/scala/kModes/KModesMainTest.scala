@@ -1,6 +1,6 @@
-package dao.kModes
+package kModes
 
-import dao.kModes.KModesData.{MPs, centroids}
+import kModes.KModesData.{MPs, centroids}
 import kModes.{CentroidsHelperMain, KModesMain}
 import model.MPDetails
 import org.mockito.ArgumentMatchers.any

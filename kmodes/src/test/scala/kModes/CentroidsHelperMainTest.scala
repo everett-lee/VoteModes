@@ -1,4 +1,4 @@
-package dao.kModes
+package kModes
 
 import constants.VoteDecision.{Aye, No, NoAttend}
 import KModesData.{votesOne, votesTwo, votesThree, votesFour, votesFive, votesSix, votesSeven, votesEight, MPs}
@@ -27,12 +27,6 @@ class CentroidsHelperMainTest extends AnyWordSpec {
       // then
       assert(centroids.size == 3)
       assert(centroids.to(Set).subsetOf(MPs.toSet))
-    }
-
-    "Throw when K > length" in {
-      assertThrows[IllegalArgumentException] {
-        centroidsHelper.initCentroids(MPs, MPs.size + 1)
-      }
     }
   }
 
