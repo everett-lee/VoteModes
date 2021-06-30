@@ -19,3 +19,10 @@ libraryDependencies ++= Seq(
   "com.github.seratch" %% "awscala-dynamodb" % "0.9.+",
   "com.github.seratch" %% "awscala-s3" % "0.9.+",
 )
+libraryDependencies ++= Seq(
+  "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
+  "com.amazonaws" % "aws-lambda-java-events" % "3.9.0",
+  scalaTest % Test
+)
+
+//addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.17.0")

@@ -8,7 +8,7 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
     (0 until K)
       .map(n => randomGenerator.nextInt(MPsWithVotes.size))
       .map(index => MPsWithVotes(index))
-      .to(Vector)
+      .toVector
   }
 
   @tailrec
