@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 
 class KModesMain(centroidsHelper: CentroidsHelper[Vector[MPWithVotes], List[VotePair]])
   extends KModes[Vector[MPWithVotes], Vector[MPDetails]] {
-  private val K = 4
+  val K = 4
   private val MAX_ITERATIONS = 1000
   private var lastClusters: Map[Int, Vector[MPWithVotes]] = Map()
 

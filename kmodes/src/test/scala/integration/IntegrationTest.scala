@@ -2,7 +2,7 @@ package integration
 
 import awscala.dynamodbv2.{Item, cond}
 import dao.{DynamodbClient, MPToVotesMap}
-import kModes.KModesData
+import kModes.{KModesData, KModesMain}
 import org.scalatest.wordspec.AnyWordSpec
 import service.DynamodbVotesFetcher
 
@@ -12,8 +12,9 @@ class IntegrationTest extends AnyWordSpec {
     val dynamodbClient = new DynamodbClient("MPs")
     dynamodbClient.setEndpoint("http://localhost:4566")
     val votesFetcher = DynamodbVotesFetcher(dynamodbClient)
+    val KModes = KModesMain()
 
-    // Create this class to match python DB input types
+    // Create this to match python DB input types
     val localMPs = KModesData.MPs.map(mp => {
       val votesAsMap = mp.votes.map(votePair => {
         Map("DivisionId" -> votePair.divisionId.toString,
@@ -29,8 +30,10 @@ class IntegrationTest extends AnyWordSpec {
 
       val members: Seq[Item] = dynamodbClient.scan(Seq("MPElectionYear" -> cond.eq(2019)))
       val mpsWithVotes = votesFetcher.getVotes(2019)
+      val res = KModes.compute(mpsWithVotes.toVector)
 
-      mpsWithVotes.foreach(mp => println(mp))
+      assert(res.size <= KModes.K)
+      assert(res.values.flatten.toList.size == localMPs.size)
 
       localMPs.indices.foreach(index => {
         dynamodbClient.deleteItem(2019, index)
