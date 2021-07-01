@@ -26,7 +26,7 @@ class CentroidsHelperMainTest extends AnyWordSpec {
 
       // then
       assert(centroids.size == 3)
-      assert(centroids.to(Set).subsetOf(MPs.toSet))
+      assert(centroids.toSet.subsetOf(MPs.toSet))
     }
   }
 

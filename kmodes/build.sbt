@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.13.6"
+ThisBuild / scalaVersion     := "2.12.9"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.lee"
 ThisBuild / organizationName := "lee"
@@ -16,8 +16,8 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
 libraryDependencies += "org.scalatestplus" %% "mockito-3-4" % "3.2.9.0" % "test"
 libraryDependencies += "org.mockito" %% "mockito-scala" % "1.16.37" % "test"
 libraryDependencies ++= Seq(
-  "com.github.seratch" %% "awscala-dynamodb" % "0.9.+",
-  "com.github.seratch" %% "awscala-s3" % "0.9.+",
+  "com.github.seratch" %% "awscala-dynamodb" % "0.8.5",
+  "com.github.seratch" %% "awscala-s3" % "0.8.5",
 )
 libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-lambda-java-core" % "1.2.1",
@@ -25,4 +25,3 @@ libraryDependencies ++= Seq(
   scalaTest % Test
 )
 
-//addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.17.0")

@@ -36,10 +36,9 @@ class KModesMain(centroidsHelper: CentroidsHelper[Vector[MPWithVotes], List[Vote
     val initCentroids = centroidsHelper.initCentroids(mpsWithVotes, K)
     val finalCentroids = looper(mpsWithVotes, initCentroids, 0)
 
-    centroidsHelper.groupByCentroid(mpsWithVotes, finalCentroids).view
+    centroidsHelper.groupByCentroid(mpsWithVotes, finalCentroids)
       .mapValues(mpsWithVotes => mpsWithVotes
         .map(mpWithVotes => MPDetails(mpWithVotes.id, mpWithVotes.mpName, mpWithVotes.mpParty)))
-      .toMap
     // log result
 
   }

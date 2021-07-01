@@ -34,7 +34,7 @@ class DynamodbVotesFetcherTest extends AnyWordSpec {
       val votesFetcher = new DynamodbVotesFetcher(mockedDynamodbClient)
 
       // when
-      when(mockedDynamodbClient.scan(any)) thenReturn items
+      when(mockedDynamodbClient.scan(any())) thenReturn items
       val votesResult = votesFetcher.getVotes(2019)
 
       // then
