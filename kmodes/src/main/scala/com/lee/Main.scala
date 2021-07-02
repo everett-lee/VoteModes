@@ -1,15 +1,16 @@
 package com.lee
 
 import com.amazonaws.services.lambda.runtime.Context
+import com.amazonaws.services.lambda.runtime.events.SQSEvent
 import com.lee.constants.Constants
 import com.lee.kModes.KModesMain
 import com.lee.service.DynamodbVotesFetcher
 import com.typesafe.scalalogging.Logger
 
-class Main  {
+class Main {
   val logger = Logger(Constants.loggerName)
 
-  def handler(event: String, context: Context): String = {
+  def handler(event: SQSEvent, context: Context): String = {
 
     logger.info("Starting handler")
     val votesFetcher = DynamodbVotesFetcher()
