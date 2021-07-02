@@ -48,7 +48,7 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
           val mode = heads.groupBy(identity)
             .maxBy({
               case (votePair, votes) =>
-                votes.size + votePair.voteDecision.toString.length / 100.0 // add this as a tiebreaker
+                votes.size + (votePair.voteDecision.toString.length / 100.0) // add this as a tiebreaker
             })._1
 
           recursiveHelper(tails, mode :: res)

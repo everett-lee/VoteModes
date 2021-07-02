@@ -37,13 +37,8 @@ aws dynamodb query \
     --expression-attribute-values '{":election_year": {"N": "2019"}, ":min_id": {"N": "50"}}' \
     --endpoint-url http://localhost:4566
 
-CORBYN
 aws dynamodb query \
     --table-name MPs \
     --key-condition-expression 'MPElectionYear = :election_year and MemberId = :mp_id' \
     --expression-attribute-values '{":election_year": {"N": "2019"}, ":mp_id": {"N": "185"}}'
 
-sudo docker run -v ~/.aws-lambda-rie:/aws-lambda -p 9000:8080 \
-  --entrypoint /aws-lambda/aws-lambda-rie downloader_lambda:latest
-
-curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{}'

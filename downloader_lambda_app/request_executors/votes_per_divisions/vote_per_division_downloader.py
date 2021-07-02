@@ -1,12 +1,12 @@
 import logging
 from collections import defaultdict
-
 from typing import List, Set, Dict
 
-from ..boto3_helpers.client_wrapper import get_table
 from .downloaders import download_all_divisions_with_votes_async
+from ..boto3_helpers.client_wrapper import get_table
 
 TOTAL_MPS = 650
+
 
 def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Set[int]) -> Dict:
     mps_to_votes = defaultdict(dict)
@@ -54,11 +54,10 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
             logging.error('failed to update votes for mp with id', mp_id)
 
-    logging.info('WOULD HAVE UPDATED WITH %s', mps_to_votes)
 
 def download_votes_per_division(divisions: List[Dict]) -> None:
     def has_good_attendance(division: dict) -> dict:
-        return division['AyeCount'] + division['NoCount'] > TOTAL_MPS * 0.6
+        return division['AyeCount'] + division['NoCount'] > (TOTAL_MPS * 0.6)
 
     mps_table = get_table('MPs')
 

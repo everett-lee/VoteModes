@@ -37,5 +37,4 @@ def download_divisions_list(year: int, month: int, election_year: int) -> List[D
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
             logging.error('failed to put division', division, 'to database')
 
-    logging.info('WOULD HAVE PUT %s', divisions)
     return divisions

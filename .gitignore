@@ -182,6 +182,7 @@ tfplan
 
 # Artefacts
 *.zip
+*.jar
 
 #Scripts
 *.sh
