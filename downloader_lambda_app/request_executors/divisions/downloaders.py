@@ -36,30 +36,6 @@ def get_fields_of_interest(division: dict) -> dict:
         'NoCount': division['NoCount']
     }
 
-
-def download_divisions_list_to_file() -> None:
-    DATES_MEM0.clear()
-    divisions = []
-
-    # 2019
-    params = {'queryParameters.startDate': '2019-12-13', 'queryParameters.endDate': '2019-12-31'}
-    res = json.loads(requests.get(URL_SEARCH_DIVISIONS, params).text)
-    divisions += [get_fields_of_interest(div) for div in res]
-
-    for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
-        intervals = get_date_intervals(2020, month)
-        divisions += get_divisions(intervals)
-
-    for month in [1, 2, 3, 4, 5]:
-        intervals = get_date_intervals(2021, month)
-        divisions += get_divisions(intervals)
-
-    with open('raw/rawDivisions', 'w') as raw_divisions:
-        raw_divisions.write('{"Data": ')
-        raw_divisions.write(json.dumps(divisions))
-        raw_divisions.write('}')
-
-
 # Split the month into three intervals so as not to exceed the maximum number of results
 # per request
 def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
