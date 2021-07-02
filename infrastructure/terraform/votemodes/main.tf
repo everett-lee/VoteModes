@@ -37,19 +37,27 @@ module lambda_repo {
   tag_name = "lambda_downloader_repo"
 }
 
-
 module sqs {
   source = "../modules/sqs"
   queue_name = "LambdaQueue"
-  tag_name = "lambda_queue"
+  tag_name = "downloader_lambda_app"
 }
 
-module lambda {
-  source = "../modules/lambda"
+module downloader_lambda {
+  source = "../modules/lambda_image"
   function_name = "DownloaderLambda"
   tag_name = "downloader_lambda_app"
-  queue_name = "LambdaQueue"
   image_uri = "540073770261.dkr.ecr.eu-west-1.amazonaws.com/lambda_downloader_repo:latest"
+  queue_arn = module.sqs.queue_arn
+  queue_url = module.sqs.queue_url
+}
+
+module kmodes_lambda {
+  source = "../modules/lambda_jar"
+  function_name = "KModesLambda"
+  tag_name = "k_modes_lambda_app"
+  file_name = "votemodes.jar"
+  handler_name = "com.lee.Main::handler"
   queue_arn = module.sqs.queue_arn
   queue_url = module.sqs.queue_url
 }

@@ -1,4 +1,0 @@
-package aws;
-
-class Clients {
-}

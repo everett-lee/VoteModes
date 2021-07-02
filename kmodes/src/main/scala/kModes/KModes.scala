@@ -1,7 +1,0 @@
-package kModes
-
-import model.MP
-
-trait KModes[A <: Seq[MP], B <: Seq[MP]] {
-  def compute(MPsWithVotes: A): Map[Int, B]
-}
