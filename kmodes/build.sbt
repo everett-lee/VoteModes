@@ -21,6 +21,11 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.3"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 
 libraryDependencies ++= Seq(
+  "org.json4s" %% "json4s-native" % "4.0.1",
+  "org.json4s" %% "json4s-jackson" % "4.0.1",
+)
+
+libraryDependencies ++= Seq(
   "com.github.seratch" %% "awscala-dynamodb" % "0.8.5",
   "com.github.seratch" %% "awscala-s3" % "0.8.5",
 )
