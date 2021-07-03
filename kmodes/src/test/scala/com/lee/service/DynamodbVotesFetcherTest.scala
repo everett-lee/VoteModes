@@ -1,7 +1,7 @@
 package com.lee.service
 
 import com.lee.constants.VoteDecision.{Aye, No, NoAttend, VoteDecision}
-import com.lee.dao.DynamodbClientTrait
+import com.lee.aws.DynamodbClientTrait
 import com.lee.helpers.DataFactory
 import com.lee.model.{MPWithVotes, VotePair}
 import org.mockito.ArgumentMatchers.any

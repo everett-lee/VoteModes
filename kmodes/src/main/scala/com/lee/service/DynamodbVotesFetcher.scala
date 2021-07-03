@@ -2,7 +2,7 @@ package com.lee.service
 
 import awscala.dynamodbv2.{Item, cond}
 import com.lee.constants.VoteDecision
-import com.lee.dao.{DynamodbClient, DynamodbClientTrait}
+import com.lee.aws.{DynamodbClient, DynamodbClientTrait}
 import com.lee.model.{MPWithVotes, VotePair}
 import com.lee.service.DynamodbVotesFetcher.attributesToMPWithVotes
 

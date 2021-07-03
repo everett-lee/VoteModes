@@ -7,7 +7,7 @@ import org.json4s.jackson.JsonMethods.{compact, render}
 
 class ResultsOutputer {
 
-  private def getPartyStats(mpDetails: List[MPDetails]): Map[String, Int] = {
+  private def getPartyStats(mpDetails: Vector[MPDetails]): Map[String, Int] = {
     val groupedByParty = mpDetails.groupBy(_.mpParty).mapValues(partyList => partyList.size)
 
     groupedByParty.map { case (partyName, size) =>
@@ -15,14 +15,14 @@ class ResultsOutputer {
     }
   }
 
-  private def mapMPDetailsToJson(mpDetails: List[MPDetails]): List[JObject] = {
+  private def mapMPDetailsToJson(mpDetails: Vector[MPDetails]): Vector[JObject] = {
     mpDetails.map { mp =>
       ("Name" -> mp.mpName) ~
         ("Party" -> mp.mpParty)
     }
   }
 
-  def createOutput(mpDetailsMap: Map[Int, List[MPDetails]]): String = {
+  def createOutput(mpDetailsMap: Map[Int, Vector[MPDetails]]): String = {
 
     val json =
       ("Clusters" ->
@@ -34,7 +34,6 @@ class ResultsOutputer {
         }
         )
 
-    println(compact(render(json)))
     compact(render(json))
   }
 }

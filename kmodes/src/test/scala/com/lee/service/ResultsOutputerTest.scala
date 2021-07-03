@@ -19,8 +19,8 @@ class ResultsOutputerTest extends AnyWordSpec {
 
       val res = resultsOutputer
         .createOutput(Map(
-          1 -> List(detailsOne, detailsTwo, detailsThree),
-          2 -> List(detailsFour, detailsFive, detailsSix)
+          1 -> Vector(detailsOne, detailsTwo, detailsThree),
+          2 -> Vector(detailsFour, detailsFive, detailsSix)
         ))
 
       assert(res == expected)

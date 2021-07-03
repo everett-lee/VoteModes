@@ -1,4 +1,4 @@
-package com.lee.dao
+package com.lee.aws
 
 import awscala.Region
 import awscala.dynamodbv2.{DynamoDB, Item, Table}

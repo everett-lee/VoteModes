@@ -1,4 +1,4 @@
-package com.lee.dao
+package com.lee.aws
 
 import awscala.dynamodbv2.Item
 import com.amazonaws.services.dynamodbv2.model.Condition

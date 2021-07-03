@@ -10,12 +10,10 @@ services:
       - "4571:4571"
       - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
     environment:
-      - SERVICES=dynamodb, sqs, iam, lambda_image
+      - SERVICES=dynamodb, sqs, iam, s3
       - DEBUG=1
       - DATA_DIR=${DATA_DIR- }
       - PORT_WEB_UI=${PORT_WEB_UI- }
-      - LAMBDA_EXECUTOR=docker
-      - LAMBDA_REMOTE_DOCKER=0
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOST_TMP_FOLDER=${TMPDIR}
     volumes:
