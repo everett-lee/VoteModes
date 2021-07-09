@@ -23,7 +23,6 @@ class ResultsOutputer {
   }
 
   def createOutput(mpDetailsMap: Map[Int, Vector[MPDetails]]): String = {
-
     val json =
       ("Clusters" ->
         mpDetailsMap.map { case (id, mps) =>

@@ -1,8 +1,8 @@
 TODO:
 - Create output json and put to S3 bucket
+- Schedule lambda with cron
 - SQS event source
 - Add env variables
-- Schedule lambda with cron
 - oop?
 
 ```json

@@ -13,7 +13,10 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      QUEUE_URL = var.queue_url
+      ELECTION_YEAR = 2019
+      BUCKET_NAME = var.bucket_name
+      K_VALUE = 5
+      MAX_ITERATIONS = 1000
     }
   }
   handler = var.handler_name

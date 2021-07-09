@@ -1,7 +1,6 @@
 package com.lee.integration
 
-import awscala.s3.{Bucket, PutObjectResult}
-import com.amazonaws.services.s3.model.ObjectMetadata
+import awscala.s3.Bucket
 import com.lee.aws.{DynamodbClient, MPToVotesMap, S3Client}
 import com.lee.integration.IntegrationTest._
 import com.lee.kModes.{KModesData, KModesMain}
@@ -44,7 +43,7 @@ class IntegrationTest extends AnyWordSpec with BeforeAndAfterAll {
       assert(res.values.flatten.toList.size == localMPs.size)
 
       val outJson = outputer.createOutput(res)
-      val putResult = putS3Object(bucket.get, "01-01-20", outJson)
+      val putResult = s3Client.putS3Object(bucket.get, "01-01-20", outJson)
 
       assert(putResult.key == "01-01-20")
 
@@ -68,15 +67,6 @@ object IntegrationTest {
 
   def deleteBucket(name: String): Unit = {
     s3Client.s3.deleteBucket(name)
-  }
-
-  def putS3Object(bucket: Bucket, key: String, item: String): PutObjectResult = {
-    val stream: java.io.InputStream = new java.io.ByteArrayInputStream(
-      item.getBytes(java.nio.charset.StandardCharsets.UTF_8.name)
-    )
-    val metaData = new ObjectMetadata()
-    metaData.setContentType("json")
-    s3Client.s3.putObject(bucket, key, stream, metaData)
   }
 
   def getS3Item(bucketName: String, key: String): String = {

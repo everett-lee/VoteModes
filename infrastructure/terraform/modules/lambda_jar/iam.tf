@@ -108,3 +108,30 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.lambda_main.name
   policy_arn = aws_iam_policy.lambda_logging.arn
 }
+
+data "aws_iam_policy_document" "s3_policy_doc" {
+  statement {
+    effect = "Allow"
+    actions = [
+        "s3:*"
+    ]
+
+    resources = [
+       "*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "s3_policy" {
+  name               = "${var.function_name}-s3-role"
+  tags = {
+    Name    = var.tag_name
+    Project = "vote-modes"
+  }
+  policy = data.aws_iam_policy_document.s3_policy_doc.json
+}
+
+resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
+  role       = aws_iam_role.lambda_main.name
+  policy_arn = aws_iam_policy.s3_policy.arn
+}

@@ -60,4 +60,12 @@ module kmodes_lambda {
   handler_name = "com.lee.Main::handler"
   queue_arn = module.sqs.queue_arn
   queue_url = module.sqs.queue_url
+  bucket_name = module.s3.bucket_id
+  bucket_arn = module.s3.bucket_arn
+}
+
+module "s3" {
+  source = "../modules/s3"
+  tag_name = "results_s3"
+  bucket_name = "votemodes-results"
 }
