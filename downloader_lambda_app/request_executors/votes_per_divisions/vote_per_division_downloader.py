@@ -36,6 +36,11 @@ def get_mp_ids(mps_table: object) -> Set[int]:
 
 
 def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
+    def validate_incoming_votes(mp_id: int, list_votes: List) -> None:
+        ids = {int(vote['DivisionId']) for vote in list_votes}
+
+        
+
     for mp_id, votes in mps_to_votes.items():
         list_votes = [{"DivisionId": div_id, "Vote": vote} for (div_id, vote) in votes.items()]
 
