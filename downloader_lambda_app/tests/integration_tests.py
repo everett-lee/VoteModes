@@ -6,7 +6,7 @@ from unittest import TestCase, mock
 
 import boto3
 
-from .data_loader import get_divisions_first
+from .data_loader import get_divisions_first, get_divisions_with_votes_third, get_divisions_third
 from .data_loader import get_divisions_second
 from .data_loader import get_divisions_with_votes_first
 from .data_loader import get_divisions_with_votes_second
@@ -75,13 +75,39 @@ class IntegrationTests(TestCase):
         self.assert_votes(mps_as_map[4362]['Votes'], 'No', 'No', 'No')
         self.assert_votes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend', 'NoAttend')
 
+
+        # third run
+        handler(None, None)
+
+        saved_divisions = self.scan_table(divisions_table)['Items']
+        self.assertEqual(len(saved_divisions), 4)
+
+        division_ids = set(map(lambda x: int(x['DivisionId']), saved_divisions))
+        self.assertEqual(division_ids, {-1, -2, -3, -4})
+
+        saved_mps = self.scan_table(mps_table)['Items']
+        for mp in saved_mps:
+            self.assertEqual(len(mp['Votes']), 4)
+
+        mps_as_map = {int(mp['MemberId']): mp for mp in saved_mps}
+        self.assertEqual(len(mps_as_map), 6)
+        self.assert_votes(mps_as_map[172]['Votes'], 'Aye', 'No', 'Aye')
+        self.assert_votes(mps_as_map[4057]['Votes'], 'Aye', 'NoAttend', 'Aye')
+        self.assert_votes(mps_as_map[39]['Votes'], 'Aye', 'Aye', 'Aye', 'Aye')
+        self.assert_votes(mps_as_map[140]['Votes'], 'No', 'Aye', 'No', 'No')
+        self.assert_votes(mps_as_map[4362]['Votes'], 'No', 'No', 'No', 'No')
+        self.assert_votes(mps_as_map[4212]['Votes'], 'NoAttend', 'NoAttend', 'NoAttend', 'NoAttend')
+
         time.sleep(5)
         self.assert_queue()
 
-    def assert_votes(self, mp_votes, first_vote, second_vote, third_vote=None):
+    def assert_votes(self, mp_votes, first_vote, second_vote, third_vote=None, fourth_vote=None):
         mp_votes = sorted(mp_votes, key=lambda mp_votes: mp_votes['DivisionId'] * -1)
         self.assertEqual(mp_votes[0]['Vote'], first_vote)
         self.assertEqual(mp_votes[1]['Vote'], second_vote)
+
+        if (third_vote):
+            self.assertEqual(mp_votes[2]['Vote'], third_vote)
 
         if (third_vote):
             self.assertEqual(mp_votes[2]['Vote'], third_vote)
@@ -99,20 +125,32 @@ class IntegrationTests(TestCase):
     def set_mock_responses(self, mock_get):
         mock_divisions_with_votes_first = get_divisions_with_votes_first()
         mock_divisions_with_votes_second = get_divisions_with_votes_second()
+        mock_divisions_with_votes_third = get_divisions_with_votes_third()
+
         mock_response_first_divisions = get_mock_response(status=200, text=json.dumps(get_divisions_first()))
         mock_response_second_divisions = get_mock_response(status=200, text=json.dumps(get_divisions_second()))
+        mock_response_third_divisions = get_mock_response(status=200, text=json.dumps(get_divisions_third()))
         mock_response_empty = get_mock_response(status=200, text=json.dumps([]))
+
         mock_response_divisions_with_votes_1 = get_mock_response(status=200,
                                                                  text=json.dumps(mock_divisions_with_votes_first[0]))
         mock_response_divisions_with_votes_2 = get_mock_response(status=200,
                                                                  text=json.dumps(mock_divisions_with_votes_first[1]))
         mock_response_divisions_with_votes_3 = get_mock_response(status=200,
                                                                  text=json.dumps(mock_divisions_with_votes_second[0]))
+        mock_response_divisions_with_votes_4 = get_mock_response(status=200,
+                                                                 text=json.dumps(mock_divisions_with_votes_third[0]))
+        mock_response_divisions_with_votes_5 = get_mock_response(status=200,
+                                                                 text=json.dumps(mock_divisions_with_votes_third[1]))
 
-        mock_get.side_effect = [mock_response_first_divisions, mock_response_empty, mock_response_empty,
-                                mock_response_divisions_with_votes_1, mock_response_divisions_with_votes_2,
-                                mock_response_second_divisions, mock_response_empty, mock_response_empty,
-                                mock_response_divisions_with_votes_3]
+        mock_get.side_effect = [mock_response_first_divisions, mock_response_empty, mock_response_empty, # first divisions
+                                mock_response_divisions_with_votes_1, mock_response_divisions_with_votes_2, # first votes
+                                mock_response_second_divisions, mock_response_empty, mock_response_empty, # second divisions
+                                mock_response_divisions_with_votes_3, # second votes
+                                mock_response_third_divisions, mock_response_empty, mock_response_empty,  # third divisions
+                                mock_response_divisions_with_votes_4, mock_response_divisions_with_votes_5] # third votes
+
+
 
     def set_up_tables(self):
         self.delete_tables()

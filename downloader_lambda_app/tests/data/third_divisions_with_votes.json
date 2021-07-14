@@ -1,0 +1,237 @@
+[
+  {
+    "DivisionId": -1,
+    "Date": "2020-01-09T17:10:00",
+    "PublicationUpdated": "2020-01-09T17:34:11",
+    "Number": 14,
+    "IsDeferred": false,
+    "EVELType": "",
+    "EVELCountry": "",
+    "Title": "National Security and Investment Bill: motion to disagree with Lords Amendments 11B and 11C",
+    "AyeCount": 330,
+    "NoCount": 231,
+    "DoubleMajorityAyeCount": null,
+    "DoubleMajorityNoCount": null,
+    "AyeTellers": [
+      {
+        "MemberId": 4369,
+        "Name": "Tom Pursglove",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Corby",
+        "ListAs": "Pursglove, Tom",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 3992,
+        "Name": "James Morris",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Halesowen and Rowley Regis",
+        "ListAs": "Morris, James",
+        "ProxyName": null
+      }
+    ],
+    "NoTellers": [
+      {
+        "MemberId": 4456,
+        "Name": "Jeff Smith",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Manchester, Withington",
+        "ListAs": "Smith, Jeff",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 4617,
+        "Name": "Matt Western",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Warwick and Leamington",
+        "ListAs": "Western, Matt",
+        "ProxyName": null
+      }
+    ],
+    "Ayes": [
+      {
+        "MemberId": 172,
+        "Name": "Ms Ada Lovelace",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Maidenhead",
+        "ListAs": "Ms Ada Lovelace",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 4057,
+        "Name": "Ms Dina Mite",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Colchester",
+        "ListAs": "Ms Dina Mite",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 39,
+        "Name": "Mr Stephen Morrissey",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Wokingham",
+        "ListAs": "Mr Stephen Morrissey",
+        "ProxyName": null
+      }
+    ],
+    "Noes": [
+      {
+        "MemberId": 140,
+        "Name": "Captain Ahab",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Hayes and Harlington",
+        "ListAs": "Captain Ahab",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 4362,
+        "Name": "Mr Mason Mount",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Leyton and Wanstead",
+        "ListAs": "Mr Mason Mount",
+        "ProxyName": "Lampard's Son"
+      }
+    ],
+    "RemoteVotingStart": null,
+    "RemoteVotingEnd": null
+  },
+  {
+    "DivisionId": -4,
+    "Date": "2020-01-09T17:10:00",
+    "PublicationUpdated": "2020-01-09T17:34:11",
+    "Number": 14,
+    "IsDeferred": false,
+    "EVELType": "",
+    "EVELCountry": "",
+    "Title": "Motion to revoke: Immigration (Guidance on Detention of Vulnerable Persons) Regulations 2021 (SI 2021 No. 184)",
+    "AyeCount": 330,
+    "NoCount": 231,
+    "DoubleMajorityAyeCount": null,
+    "DoubleMajorityNoCount": null,
+    "AyeTellers": [
+      {
+        "MemberId": 4369,
+        "Name": "Tom Pursglove",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Corby",
+        "ListAs": "Pursglove, Tom",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 3992,
+        "Name": "James Morris",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Halesowen and Rowley Regis",
+        "ListAs": "Morris, James",
+        "ProxyName": null
+      }
+    ],
+    "NoTellers": [
+      {
+        "MemberId": 4456,
+        "Name": "Jeff Smith",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Manchester, Withington",
+        "ListAs": "Smith, Jeff",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 4617,
+        "Name": "Matt Western",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Warwick and Leamington",
+        "ListAs": "Western, Matt",
+        "ProxyName": null
+      }
+    ],
+    "Ayes": [
+      {
+        "MemberId": 39,
+        "Name": "Mr Stephen Morrissey",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Wokingham",
+        "ListAs": "Mr Stephen Morrissey",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 140,
+        "Name": "Captain Ahab",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Hayes and Harlington",
+        "ListAs": "Captain Ahab",
+        "ProxyName": null
+      }
+    ],
+    "Noes": [
+      {
+        "MemberId": 172,
+        "Name": "Ms Ada Lovelace",
+        "Party": "Conservative",
+        "SubParty": null,
+        "PartyColour": "0000ff",
+        "PartyAbbreviation": "Con",
+        "MemberFrom": "Maidenhead",
+        "ListAs": "Ms Ada Lovelace",
+        "ProxyName": null
+      },
+      {
+        "MemberId": 4362,
+        "Name": "Mr Mason Mount",
+        "Party": "Labour",
+        "SubParty": null,
+        "PartyColour": "ff0000",
+        "PartyAbbreviation": "Lab",
+        "MemberFrom": "Leyton and Wanstead",
+        "ListAs": "Mr Mason Mount",
+        "ProxyName": "Lampard's Son"
+      }
+    ],
+    "RemoteVotingStart": null,
+    "RemoteVotingEnd": null
+  }
+]
