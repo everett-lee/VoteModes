@@ -27,14 +27,24 @@ def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Se
 
 
 def get_mp_ids(mps_table: object) -> Set[int]:
-    dynamodb_mp_ids = mps_table.scan(
-        ProjectionExpression='MemberId',
-    )['Items']
+    results = mps_table.query(
+        KeyConditionExpression=Key('MPElectionYear').eq(2019),
+        ProjectionExpression='MemberId'
+    )
+    items = results['Items']
 
-    if not dynamodb_mp_ids:
-        logging.info('unable to fetch mp ids from database')
+    while 'LastEvaluatedKey' in results:
+        if results['ResponseMetadata']['HTTPStatusCode'] != 200:
+            logging.error('Failure when fetching MP ids')
 
-    return set(map(lambda x: int(x['MemberId']), dynamodb_mp_ids))
+        results = mps_table.query(
+            KeyConditionExpression=Key('MPElectionYear').eq(2019),
+            ProjectionExpression='MemberId',
+            ExclusiveStartKey=results['LastEvaluatedKey']
+        )
+        items += results['Items']
+
+    return {int(item['MemberId']) for item in items}
 
 
 def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
@@ -43,11 +53,11 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
 
         res = mps_table.query(
             KeyConditionExpression=Key('MPElectionYear').eq(2019) & Key('MemberId').eq(mp_id),
-            ProjectionExpression='MemberId, Votes'
+            ProjectionExpression='Votes'
         )
 
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-            logging.error('Failed to validate votes for mp with id', mp_id)
+            logging.error('Failed to validate votes for mp with id %s', mp_id)
         else:
             existing_votes = res['Items'][0]['Votes']
             existing_vote_ids = {int(vote['DivisionId']) for vote in existing_votes}
@@ -55,15 +65,15 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
             duplicate_ids = existing_vote_ids.intersection(new_vote_ids)
 
             if len(duplicate_ids) > 0:
-                logging.error('Votes with these ids have been processed already: ', duplicate_ids)
+                logging.error('Votes with these ids have been processed already: %s', duplicate_ids)
 
             return duplicate_ids
 
     for mp_id, votes in mps_to_votes.items():
-        list_votes = [{'DivisionId': div_id, 'Vote': vote} for (div_id, vote) in votes.items()]
+        list_votes = [{'DivisionId': str(div_id), 'Vote': vote} for (div_id, vote) in votes.items()]
         existing_votes = validate_incoming_votes(mp_id, list_votes)
         filtered_list_votes = [vote_pair for vote_pair in list_votes
-                               if (vote_pair['DivisionId'] not in existing_votes)]
+                               if (int(vote_pair['DivisionId']) not in existing_votes)]
 
         res = mps_table.update_item(
             Key={
@@ -78,7 +88,7 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
         )
 
         if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-            logging.error('failed to update votes for mp with id', mp_id)
+            logging.error('failed to update votes for mp with id %s', mp_id)
 
 
 def download_votes_per_division(divisions: List[Dict]) -> None:
