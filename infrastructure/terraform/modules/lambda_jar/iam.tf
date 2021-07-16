@@ -24,6 +24,8 @@ data "aws_iam_policy_document" "sqs_policy" {
     effect = "Allow"
     actions = [
       "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
     ]
     resources = [
       var.queue_arn,

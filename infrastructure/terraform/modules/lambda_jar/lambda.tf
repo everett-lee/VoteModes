@@ -21,3 +21,8 @@ resource "aws_lambda_function" "lambda" {
   }
   handler = var.handler_name
 }
+
+resource "aws_lambda_event_source_mapping" "sqs_trigger" {
+  event_source_arn = var.queue_arn
+  function_name    = aws_lambda_function.lambda.arn
+}
