@@ -189,3 +189,6 @@ tfplan
 
 #AWS
 aws-lambda-rie
+
+# Data validation script
+validator.py
