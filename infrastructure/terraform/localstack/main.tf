@@ -11,35 +11,35 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    lambda = "http://0.0.0.0:4566"
-    iam    = "http://localhost:4566"
-    dynamodb      = "http://localhost:4566"
-    sqs = "http://localhost:4566"
+    lambda   = "http://0.0.0.0:4566"
+    iam      = "http://localhost:4566"
+    dynamodb = "http://localhost:4566"
+    sqs      = "http://localhost:4566"
   }
 }
 
-module divisions_table {
-  source = "../modules/dynamodb"
-  table_name = "Divisions"
+module "divisions_table" {
+  source             = "../modules/dynamodb"
+  table_name         = "Divisions"
   attribute_name_one = "DivisionElectionYear"
   attribute_type_one = "N"
   attribute_name_two = "DivisionDate"
   attribute_type_two = "S"
-  tag_name = "divisions-table"
+  tag_name           = "divisions-table"
 }
 
-module mps_table {
-  source = "../modules/dynamodb"
-  table_name = "MPs"
+module "mps_table" {
+  source             = "../modules/dynamodb"
+  table_name         = "MPs"
   attribute_name_one = "MPElectionYear"
   attribute_type_one = "N"
   attribute_name_two = "MemberId"
   attribute_type_two = "N"
-  tag_name = "mps-table"
+  tag_name           = "mps-table"
 }
 
-module sqs {
-  source = "../modules/sqs"
+module "sqs" {
+  source     = "../modules/sqs"
   queue_name = "LambdaQueue"
-  tag_name = "lambda_queue"
+  tag_name   = "lambda_queue"
 }

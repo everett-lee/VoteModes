@@ -1,6 +1,5 @@
 TODO:
 - Schedule lambda with cron
-- SQS event source
 - oop?
 
 ```json

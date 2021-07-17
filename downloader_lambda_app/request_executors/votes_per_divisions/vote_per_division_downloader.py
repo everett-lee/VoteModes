@@ -11,6 +11,13 @@ TOTAL_MPS = 650
 
 
 def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Set[int]) -> Dict:
+    """
+    Takes a list of dicts containing each division and the corresponding
+    votes (ayes, noes and no attends) and a set of MP ids.
+    Returns a dict of MP ids mapped to a dict of each division id and the MP's
+    vote for that division
+    """
+
     mps_to_votes = defaultdict(dict)
 
     for division in divisions_with_votes:
@@ -27,6 +34,10 @@ def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Se
 
 
 def get_mp_ids(mps_table: object) -> Set[int]:
+    """
+    Gets all MP ids stored in the database
+    """
+
     results = mps_table.query(
         KeyConditionExpression=Key('MPElectionYear').eq(2019),
         ProjectionExpression='MemberId'
@@ -48,6 +59,12 @@ def get_mp_ids(mps_table: object) -> Set[int]:
 
 
 def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
+    """
+    Takes dict mapping each MP to their votes. These pairs are
+    iterated over, already-processed votes are removed,
+    and the list of votes for each MP is updated.
+    """
+
     def validate_incoming_votes(mp_id: int, list_votes: List) -> Set[int]:
         new_vote_ids = {int(vote['DivisionId']) for vote in list_votes}
 
@@ -71,9 +88,9 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
 
     for mp_id, votes in mps_to_votes.items():
         list_votes = [{'DivisionId': str(div_id), 'Vote': vote} for (div_id, vote) in votes.items()]
-        existing_votes = validate_incoming_votes(mp_id, list_votes)
+        processed_votes = validate_incoming_votes(mp_id, list_votes)
         filtered_list_votes = [vote_pair for vote_pair in list_votes
-                               if (int(vote_pair['DivisionId']) not in existing_votes)]
+                               if (int(vote_pair['DivisionId']) not in processed_votes)]
 
         res = mps_table.update_item(
             Key={

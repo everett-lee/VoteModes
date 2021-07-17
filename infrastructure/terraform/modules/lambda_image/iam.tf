@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "sqs_policy" {
 }
 
 resource "aws_iam_policy" "lambda_sqs" {
-  name               = "${var.function_name}-sqs-role"
+  name = "${var.function_name}-sqs-role"
   tags = {
     Name    = var.tag_name
     Project = "vote-modes"
@@ -49,23 +49,23 @@ data "aws_iam_policy_document" "dynamodb_policy" {
   statement {
     effect = "Allow"
     actions = [
-     "dynamodb:BatchGetItem",
-     "dynamodb:GetItem",
-     "dynamodb:Query",
-     "dynamodb:Scan",
-     "dynamodb:BatchWriteItem",
-     "dynamodb:PutItem",
-     "dynamodb:UpdateItem"
+      "dynamodb:BatchGetItem",
+      "dynamodb:GetItem",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem"
     ]
 
     resources = [
-       "*"
+      "*"
     ]
   }
 }
 
 resource "aws_iam_policy" "lambda_dynamodb" {
-  name               = "${var.function_name}-dynamodb-role"
+  name = "${var.function_name}-dynamodb-role"
   tags = {
     Name    = var.tag_name
     Project = "vote-modes"
@@ -87,20 +87,20 @@ data "aws_iam_policy_document" "cloudwatch_policy" {
   statement {
     effect = "Allow"
     actions = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
 
     resources = [
-       "arn:aws:logs:*:*:*"
+      "arn:aws:logs:*:*:*"
     ]
   }
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name = "lambda_logging"
-  path = "/"
+  name        = "lambda_logging"
+  path        = "/"
   description = "IAM policy for logging from a ${var.function_name} lambda"
 
   policy = data.aws_iam_policy_document.cloudwatch_policy.json

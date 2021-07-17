@@ -12,7 +12,7 @@ URL_GET_DIVISION = 'https://commonsvotes-api.parliament.uk/data/division/'
 
 
 def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
-    ayes = set(map(lambda x: x['MemberId'], division['Ayes']))
+    ayes = set(map(lambda x: x['MemberId'], division['Ayes']))  # TODO: use set comp
     noes = set(map(lambda x: x['MemberId'], division['Noes']))
     no_attend = mp_ids.difference(ayes.union(noes))
 
@@ -20,7 +20,7 @@ def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
         'DivisionId': int(division['DivisionId']),
         'Ayes': list(ayes),
         'Noes': list(noes),
-        'DidNotAttend': list(no_attend),
+        'DidNotAttend': list(no_attend)
     }
 
 

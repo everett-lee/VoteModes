@@ -34,7 +34,7 @@ data "aws_iam_policy_document" "sqs_policy" {
 }
 
 resource "aws_iam_policy" "lambda_sqs" {
-  name               = "${var.function_name}-sqs-role"
+  name = "${var.function_name}-sqs-role"
   tags = {
     Name    = var.tag_name
     Project = "vote-modes"
@@ -51,21 +51,21 @@ data "aws_iam_policy_document" "dynamodb_policy" {
   statement {
     effect = "Allow"
     actions = [
-     "dynamodb:BatchGetItem",
-     "dynamodb:DescribeTable",
-     "dynamodb:GetItem",
-     "dynamodb:Query",
-     "dynamodb:Scan"
+      "dynamodb:BatchGetItem",
+      "dynamodb:DescribeTable",
+      "dynamodb:GetItem",
+      "dynamodb:Query",
+      "dynamodb:Scan"
     ]
 
     resources = [
-       "*"
+      "*"
     ]
   }
 }
 
 resource "aws_iam_policy" "lambda_dynamodb" {
-  name               = "${var.function_name}-dynamodb-role"
+  name = "${var.function_name}-dynamodb-role"
   tags = {
     Name    = var.tag_name
     Project = "vote-modes"
@@ -87,20 +87,20 @@ data "aws_iam_policy_document" "cloudwatch_policy" {
   statement {
     effect = "Allow"
     actions = [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
     ]
 
     resources = [
-       "arn:aws:logs:*:*:*"
+      "arn:aws:logs:*:*:*"
     ]
   }
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name = "${var.function_name}_lambda_logging"
-  path = "/"
+  name        = "${var.function_name}_lambda_logging"
+  path        = "/"
   description = "IAM policy for logging from a ${var.function_name} lambda"
 
   policy = data.aws_iam_policy_document.cloudwatch_policy.json
@@ -115,17 +115,17 @@ data "aws_iam_policy_document" "s3_policy_doc" {
   statement {
     effect = "Allow"
     actions = [
-        "s3:*"
+      "s3:*"
     ]
 
     resources = [
-       "*"
+      "*"
     ]
   }
 }
 
 resource "aws_iam_policy" "s3_policy" {
-  name               = "${var.function_name}-s3-role"
+  name = "${var.function_name}-s3-role"
   tags = {
     Name    = var.tag_name
     Project = "vote-modes"
