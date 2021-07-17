@@ -6,25 +6,26 @@ from typing import List, Set, Dict
 
 import requests
 
+from .division_with_votes import DivisionWithVotes
 from .multithreaded.time_it import timeit
 
 URL_GET_DIVISION = 'https://commonsvotes-api.parliament.uk/data/division/'
 
 
-def get_division_votes_and_id(division: Dict, mp_ids: Set[int]) -> Dict:
-    ayes = set(map(lambda x: x['MemberId'], division['Ayes']))  # TODO: use set comp
-    noes = set(map(lambda x: x['MemberId'], division['Noes']))
+def get_division_with_votes(division: Dict, mp_ids: Set[int]) -> DivisionWithVotes:
+    ayes = {int(vote['MemberId']) for vote in division['Ayes']}
+    noes = {int(vote['MemberId']) for vote in division['Noes']}
     no_attend = mp_ids.difference(ayes.union(noes))
 
-    return {
-        'DivisionId': int(division['DivisionId']),
-        'Ayes': list(ayes),
-        'Noes': list(noes),
-        'DidNotAttend': list(no_attend)
-    }
+    return DivisionWithVotes(
+        division_id=division['DivisionId'],
+        ayes=list(ayes),
+        noes=list(noes),
+        no_attends=list(no_attend)
+    )
 
 
-def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
+def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> DivisionWithVotes:
     url = '{base_url}{division_id}.json'.format(base_url=URL_GET_DIVISION, division_id=division_id)
     failed_count = 0
 
@@ -40,18 +41,22 @@ def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> Dict:
         logging.error(error)
         raise RuntimeError(error)
 
-    raw_json = json.loads(res.text)
-    return get_division_votes_and_id(raw_json, mp_ids)
+    json_dict = json.loads(res.text)
+    return get_division_with_votes(json_dict, mp_ids)
 
 
 @timeit
-def download_all_divisions_with_votes_sync(with_good_attendance: List[Dict], mp_ids: Set[int]) -> List[Dict]:
+def download_all_divisions_with_votes_sync(with_good_attendance: List[Dict],
+                                           mp_ids: Set[int]) -> List[DivisionWithVotes]:
+
     division_ids = [division['DivisionId'] for division in with_good_attendance]
     return [download_division_with_vote(division_id, mp_ids) for division_id in division_ids]
 
 
 @timeit
-def download_all_divisions_with_votes_async(with_good_attendance: List[Dict], mp_ids: Set[int]) -> List[Dict]:
+def download_all_divisions_with_votes_async(with_good_attendance: List[Dict],
+                                            mp_ids: Set[int]) -> List[DivisionWithVotes]:
+
     division_ids = [division['DivisionId'] for division in with_good_attendance]
     results = []
 

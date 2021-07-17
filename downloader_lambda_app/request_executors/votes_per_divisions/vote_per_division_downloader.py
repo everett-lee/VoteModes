@@ -4,16 +4,16 @@ from typing import List, Set, Dict
 
 from boto3.dynamodb.conditions import Key
 
+from .division_with_votes import DivisionWithVotes
 from .downloaders import download_all_divisions_with_votes_async
 from ..boto3_helpers.client_wrapper import get_table
 
 TOTAL_MPS = 650
 
 
-def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Set[int]) -> Dict:
+def map_divisions_with_votes_to_mps(divisions_with_votes: List[DivisionWithVotes], mp_ids: Set[int]) -> Dict:
     """
-    Takes a list of dicts containing each division and the corresponding
-    votes (ayes, noes and no attends) and a set of MP ids.
+    Takes a list of DivisionWithVotes and a set of MP ids.
     Returns a dict of MP ids mapped to a dict of each division id and the MP's
     vote for that division
     """
@@ -21,13 +21,13 @@ def map_divisions_with_votes_to_mps(divisions_with_votes: List[Dict], mp_ids: Se
     mps_to_votes = defaultdict(dict)
 
     for division in divisions_with_votes:
-        division_id = int(division['DivisionId'])
-        for aye_voter_id in division['Ayes']:
-            mps_to_votes[int(aye_voter_id)][division_id] = 'Aye'
-        for no_voted_id in division['Noes']:
-            mps_to_votes[int(no_voted_id)][division_id] = 'No'
-        for no_attend_id in division['DidNotAttend']:
-            mps_to_votes[int(no_attend_id)][division_id] = 'NoAttend'
+        division_id = division.division_id
+        for aye_voter_id in division.ayes:
+            mps_to_votes[aye_voter_id][division_id] = 'Aye'
+        for no_voted_id in division.noes:
+            mps_to_votes[no_voted_id][division_id] = 'No'
+        for no_attend_id in division.no_attends:
+            mps_to_votes[no_attend_id][division_id] = 'NoAttend'
 
     # only include mps recorded in the database
     return {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}

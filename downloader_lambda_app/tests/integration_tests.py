@@ -6,13 +6,13 @@ from unittest import TestCase, mock
 
 import boto3
 
-from .data_loader import get_divisions_first, get_divisions_with_votes_third, get_divisions_third
-from .data_loader import get_divisions_second
-from .data_loader import get_divisions_with_votes_first
-from .data_loader import get_divisions_with_votes_second
-from .data_loader import get_mps
-from .mock_response_helper.mock_response_helper import get_mock_response
-from ..downloader_lambda import handler
+from data_loader import get_divisions_first, get_divisions_with_votes_third, get_divisions_third
+from data_loader import get_divisions_second
+from data_loader import get_divisions_with_votes_first
+from data_loader import get_divisions_with_votes_second
+from data_loader import get_mps
+from mock_response_helper.mock_response_helper import get_mock_response
+from downloader_lambda import handler
 
 localhost_queue_url = "http://localhost:4566/000000000000/LambdaQueue"
 
