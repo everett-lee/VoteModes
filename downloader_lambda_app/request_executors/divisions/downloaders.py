@@ -9,12 +9,13 @@ import requests
 URL_SEARCH_DIVISIONS = 'https://commonsvotes-api.parliament.uk/data/divisions.json/search'
 DATES_MEM0 = set()
 
-"""
-Date of division is used as a range key in the database, but this appears to get defaulted
-to midnight in some cases, resulting in duplicate keys. This workaround ensures all dates 
-are unique
-"""
 def increment_date(old_date: str, dates_memo: Set[str]) -> str:
+    """
+    Division datetime is used as a range key in the database. The time portion
+    sometimes gets defaulted to midnight in the source data, resulting in duplicate keys.
+    This workaround ensures all datetimes are unique.
+    """
+
     if old_date not in dates_memo:
         return old_date
 
@@ -36,9 +37,13 @@ def get_fields_of_interest(division: dict) -> dict:
         'NoCount': division['NoCount']
     }
 
-# Split the month into three intervals so as not to exceed the maximum number of results
-# per request
+
 def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
+    """
+    Splits the month into three intervals so as not to exceed the maximum number of results
+    per request
+    """
+
     def month_to_str(int_month: int) -> str:
         if int_month < 10:
             return "0{month}".format(month=int_month)
