@@ -29,6 +29,7 @@ def get_fields_of_interest(division: dict) -> dict:
     current_date = increment_date(current_date, DATES_MEM0)
     DATES_MEM0.add(current_date)
 
+    # TODO: create division object
     return {
         'DivisionId': division['DivisionId'],
         'Date': current_date,
@@ -50,6 +51,7 @@ def get_date_intervals(year: int, month: int) -> List[Tuple[str, str]]:
         else:
             return "{month}".format(month=int_month)
 
+    # TODO: create itnerval class
     first_open = '{year}-{month}-01'.format(year=year, month=month_to_str(month)) if month == 1 \
         else '{year}-{month}-02'.format(year=year, month=month_to_str(month))
     first_close = '{year}-{month}-10'.format(year=year, month=month_to_str(month))

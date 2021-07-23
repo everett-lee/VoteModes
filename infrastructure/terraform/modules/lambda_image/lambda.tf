@@ -20,8 +20,12 @@ resource "aws_lambda_function" "lambda" {
 
 resource "aws_cloudwatch_event_rule" "cron_rule" {
     name = "lambda_cron_rule"
-    description = "Fires every five minutes"
-    schedule_expression = "0 0 1 4 * ? *"
+    description = "Fires fourth day each month"
+    schedule_expression = "cron(0 1 3 * ? *)"
+  tags = {
+    Name    = var.tag_name
+    Project = "vote-modes"
+  }
 }
 
 resource "aws_lambda_permission" "cloudwatch_trigger_permission" {

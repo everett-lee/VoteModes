@@ -11,7 +11,8 @@ from ..boto3_helpers.client_wrapper import get_table
 TOTAL_MPS = 650
 
 
-def map_divisions_with_votes_to_mps(divisions_with_votes: List[DivisionWithVotes], mp_ids: Set[int]) -> Dict:
+def map_divisions_with_votes_to_mps(divisions_with_votes: List[DivisionWithVotes],
+                                    mp_ids: Set[int]) -> Dict[int, Dict[int, str]]:
     """
     Takes a list of DivisionWithVotes and a set of MP ids.
     Returns a dict of MP ids mapped to a dict of each division id and the MP's
@@ -58,7 +59,7 @@ def get_mp_ids(mps_table: object) -> Set[int]:
     return {int(item['MemberId']) for item in items}
 
 
-def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
+def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> None:
     """
     Takes dict mapping each MP to their votes. These pairs are
     iterated over, already-processed votes are removed,
@@ -87,7 +88,7 @@ def set_votes(mps_to_votes: Dict, mps_table: object) -> None:
             return duplicate_ids
 
     for mp_id, votes in mps_to_votes.items():
-        list_votes = [{'DivisionId': str(div_id), 'Vote': vote} for (div_id, vote) in votes.items()]
+        list_votes = [{'DivisionId': str(div_id), 'Vote': vote} for (div_id, vote) in votes.items()] # TODO: could use votepair class from outset?
         processed_votes = validate_incoming_votes(mp_id, list_votes)
         filtered_list_votes = [vote_pair for vote_pair in list_votes
                                if (int(vote_pair['DivisionId']) not in processed_votes)]

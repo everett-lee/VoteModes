@@ -1,6 +1,4 @@
 TODO:
-- Schedule lambda with cron
-- oop?
 
 ```json
 {
