@@ -67,7 +67,7 @@ def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> Non
     and the list of votes for each MP is updated.
     """
 
-    def validate_incoming_votes(mp_id: int, list_votes: List) -> Set[int]:
+    def get_duplicate_ids(mp_id: int, list_votes: List[Dict[str, str]]) -> Set[int]:
         new_vote_ids = {int(vote['DivisionId']) for vote in list_votes}
 
         res = mps_table.query(
@@ -89,10 +89,10 @@ def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> Non
             return duplicate_ids
 
     for mp_id, votes in mps_to_votes.items():
-        list_votes = [{'DivisionId': str(div_id), 'Vote': vote} for (div_id, vote) in votes.items()] # TODO: could use votepair class from outset?
-        processed_votes = validate_incoming_votes(mp_id, list_votes)
+        list_votes = [{'DivisionId': str(div_id), 'Vote': vote} for (div_id, vote) in votes.items()]
+        duplicate_ids = get_duplicate_ids(mp_id, list_votes)
         filtered_list_votes = [vote_pair for vote_pair in list_votes
-                               if (int(vote_pair['DivisionId']) not in processed_votes)]
+                               if (int(vote_pair['DivisionId']) not in duplicate_ids)]
 
         res = mps_table.update_item(
             Key={

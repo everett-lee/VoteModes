@@ -17,7 +17,8 @@ class MonthWithIntervals:
         self.third_interval = self.get_third_interval()
         self.get_interval_list = [self.first_interval, self.second_interval, self.third_interval]
 
-    def month_to_str(self, int_month: int) -> str:
+    @staticmethod
+    def month_to_str(int_month: int) -> str:
         if int_month < 10:
             return "0{month}".format(month=int_month)
         else:
