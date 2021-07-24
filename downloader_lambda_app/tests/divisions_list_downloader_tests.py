@@ -1,12 +1,13 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
+from divisions.division import Division
 from divisions.month_with_intervals import MonthWithIntervals
 from data_loader import get_divisions_first
 from mock_response_helper.mock_response_helper import get_mock_response
-from request_executors.divisions.downloaders import get_fields_of_interest, get_divisions, increment_date
+from request_executors.divisions.downloaders import get_divisions
 
-division = get_divisions_first()[0]
+division_json = get_divisions_first()[0]
 
 class TestGetDateIntervals(TestCase):
     def test_jan_interval_has_correct_range(self):
@@ -39,14 +40,14 @@ class TestGetDateIntervals(TestCase):
         self.assertEqual(intervals[2].open, '1999-12-21')
         self.assertEqual(intervals[2].close, '1999-12-31')
 
-    def test_get_fields_of_interest(self):
-        foi = get_fields_of_interest(division)
-        self.assertEqual(foi['DivisionId'], -1)
-        self.assertEqual(foi['Date'], '2021-04-28T16:54:00')
-        self.assertEqual(foi['Title'],
+    def test_create_division(self):
+        division = Division(division_json)
+        self.assertEqual(division.division_id, -1)
+        self.assertEqual(division.date, '2021-04-28T16:54:00')
+        self.assertEqual(division.title,
                          'National Security and Investment Bill: motion to disagree with Lords Amendments 11B and 11C')
-        self.assertEqual(foi['AyeCount'], 358)
-        self.assertEqual(foi['NoCount'], 269)
+        self.assertEqual(division.aye_count, 358)
+        self.assertEqual(division.no_count, 269)
 
     @mock.patch('requests.get')
     def test_download_division_with_vote_all_failures(self, mock_get):
@@ -57,29 +58,32 @@ class TestGetDateIntervals(TestCase):
             get_divisions(intervals)
 
     def test_increment_date_empty_set(self):
-        mock_dates_memo = set()
+        division = Division(division_json)
         input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = increment_date(input_date, mock_dates_memo)
+        updated = Division.increment_date(division, input_date)
 
         self.assertEqual(updated, '2021-05-17T11:59:59')
 
     def test_increment_date_one_date_clash(self):
-        mock_dates_memo = {'2021-05-17T11:59:59'}
+        division = Division(division_json)
+        division.dates_memo = {'2021-05-17T11:59:59'}
         input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = increment_date(input_date, mock_dates_memo)
+        updated = Division.increment_date(division, input_date)
 
         self.assertEqual(updated, '2021-05-17T12:00:00')
 
     def test_increment_date_two_date_clashes(self):
-        mock_dates_memo = {'2021-05-17T11:59:59', '2021-05-17T12:00:00'}
+        division = Division(division_json)
+        division.dates_memo = {'2021-05-17T11:59:59', '2021-05-17T12:00:00'}
         input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = increment_date(input_date, mock_dates_memo)
+        updated = Division.increment_date(division, input_date)
 
         self.assertEqual(updated, '2021-05-17T12:00:01')
 
     def test_increment_date_one_date_clash_one_unrelated(self):
-        mock_dates_memo = {'2021-05-17T11:59:59', '2021-06-17T12:20:00'}
+        division = Division(division_json)
+        division.dates_memo = {'2021-05-17T11:59:59', '2021-06-17T12:20:00'}
         input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = increment_date(input_date, mock_dates_memo)
+        updated = Division.increment_date(division, input_date)
 
         self.assertEqual(updated, '2021-05-17T12:00:00')

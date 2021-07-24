@@ -6,6 +6,7 @@ from typing import List, Set, Dict
 
 import requests
 
+from divisions.division import Division
 from .division_with_votes import DivisionWithVotes
 from .multithreaded.time_it import timeit
 
@@ -46,18 +47,18 @@ def download_division_with_vote(division_id: int, mp_ids: Set[int]) -> DivisionW
 
 
 @timeit
-def download_all_divisions_with_votes_sync(with_good_attendance: List[Dict],
+def download_all_divisions_with_votes_sync(with_good_attendance: List[Division],
                                            mp_ids: Set[int]) -> List[DivisionWithVotes]:
 
-    division_ids = [division['DivisionId'] for division in with_good_attendance]
+    division_ids = [division.division_id for division in with_good_attendance]
     return [download_division_with_vote(division_id, mp_ids) for division_id in division_ids]
 
 
 @timeit
-def download_all_divisions_with_votes_async(with_good_attendance: List[Dict],
+def download_all_divisions_with_votes_async(with_good_attendance: List[Division],
                                             mp_ids: Set[int]) -> List[DivisionWithVotes]:
 
-    division_ids = [division['DivisionId'] for division in with_good_attendance]
+    division_ids = [division.division_id for division in with_good_attendance]
     results = []
 
     with ThreadPoolExecutor(max_workers=10) as executor:

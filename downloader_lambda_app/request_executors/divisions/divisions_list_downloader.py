@@ -1,7 +1,8 @@
 import logging
 import sys
-from typing import List, Dict
+from typing import List
 
+from .division import Division
 from .month_with_intervals import MonthWithIntervals
 
 sys.path.append('..')
@@ -12,27 +13,22 @@ from .downloaders import get_divisions
 TABLE_NAME = 'Divisions'
 
 
-def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
+def download_divisions_list(year: int, month: int, election_year: int) -> List[Division]:
     intervals = MonthWithIntervals(year=year, month=month)
     divisions = get_divisions(intervals)
     logging.info('Downloaded %s divisions', divisions)
     table = get_table(TABLE_NAME)
 
     for division in divisions:
-        division_id = division['DivisionId']
-        date = division['Date'].strip()
-        title = division['Title'].strip()
-        aye_count = division['AyeCount'],
-        no_count = division['NoCount']
 
         res = table.put_item(
             Item={
                 'DivisionElectionYear': election_year,
-                'DivisionId': division_id,
-                'DivisionDate': date,
-                'Title': title,
-                'AyeCount': aye_count,
-                'NoCount': no_count
+                'DivisionId': division.division_id,
+                'DivisionDate': division.date,
+                'Title': division.title,
+                'AyeCount': division.aye_count,
+                'NoCount': division.no_count
             }
         )
 

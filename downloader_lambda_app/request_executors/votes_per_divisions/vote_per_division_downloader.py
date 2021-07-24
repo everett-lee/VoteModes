@@ -4,6 +4,7 @@ from typing import List, Set, Dict
 
 from boto3.dynamodb.conditions import Key
 
+from divisions.division import Division
 from .division_with_votes import DivisionWithVotes
 from .downloaders import download_all_divisions_with_votes_async
 from ..boto3_helpers.client_wrapper import get_table
@@ -109,9 +110,9 @@ def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> Non
             logging.error('failed to update votes for mp with id %s', mp_id)
 
 
-def download_votes_per_division(divisions: List[Dict]) -> None:
-    def has_good_attendance(division: dict) -> dict:
-        return division['AyeCount'] + division['NoCount'] > (TOTAL_MPS * 0.6)
+def download_votes_per_division(divisions: List[Division]) -> None:
+    def has_good_attendance(division: Division) -> bool:
+        return division.aye_count + division.no_count > (TOTAL_MPS * 0.6)
 
     mps_table = get_table('MPs')
 
