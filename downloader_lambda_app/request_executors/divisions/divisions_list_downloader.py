@@ -2,16 +2,18 @@ import logging
 import sys
 from typing import List, Dict
 
+from .month_with_intervals import MonthWithIntervals
+
 sys.path.append('..')
 
 from ..boto3_helpers.client_wrapper import get_table
-from .downloaders import get_date_intervals, get_divisions
+from .downloaders import get_divisions
 
 TABLE_NAME = 'Divisions'
 
 
 def download_divisions_list(year: int, month: int, election_year: int) -> List[Dict]:
-    intervals = get_date_intervals(year, month)
+    intervals = MonthWithIntervals(year=year, month=month)
     divisions = get_divisions(intervals)
     logging.info('Downloaded %s divisions', divisions)
     table = get_table(TABLE_NAME)

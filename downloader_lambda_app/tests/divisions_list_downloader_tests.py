@@ -1,40 +1,43 @@
 from datetime import datetime
 from unittest import TestCase, mock
 
-from .data_loader import get_divisions_first
-from .mock_response_helper.mock_response_helper import get_mock_response
-from ..request_executors.divisions.divisions_list_downloader import get_date_intervals
-from ..request_executors.divisions.downloaders import get_fields_of_interest, get_divisions, increment_date
+from divisions.month_with_intervals import MonthWithIntervals
+from data_loader import get_divisions_first
+from mock_response_helper.mock_response_helper import get_mock_response
+from request_executors.divisions.downloaders import get_fields_of_interest, get_divisions, increment_date
 
 division = get_divisions_first()[0]
 
 class TestGetDateIntervals(TestCase):
     def test_jan_interval_has_correct_range(self):
-        interval = get_date_intervals(1999, 1)
-        self.assertEqual(interval[0][0], '1999-01-01')
-        self.assertEqual(interval[0][1], '1999-01-10')
-        self.assertEqual(interval[1][0], '1999-01-11')
-        self.assertEqual(interval[1][1], '1999-01-20')
-        self.assertEqual(interval[2][0], '1999-01-21')
-        self.assertEqual(interval[2][1], '1999-02-01')
+        intervals = MonthWithIntervals(month=1, year=1999).get_interval_list
+
+        self.assertEqual(intervals[0].open, '1999-01-01')
+        self.assertEqual(intervals[0].close, '1999-01-10')
+        self.assertEqual(intervals[1].open, '1999-01-11')
+        self.assertEqual(intervals[1].close, '1999-01-20')
+        self.assertEqual(intervals[2].open, '1999-01-21')
+        self.assertEqual(intervals[2].close, '1999-02-01')
 
     def test_feb_interval_has_correct_range(self):
-        interval = get_date_intervals(1999, 2)
-        self.assertEqual(interval[0][0], '1999-02-02')
-        self.assertEqual(interval[0][1], '1999-02-10')
-        self.assertEqual(interval[1][0], '1999-02-11')
-        self.assertEqual(interval[1][1], '1999-02-20')
-        self.assertEqual(interval[2][0], '1999-02-21')
-        self.assertEqual(interval[2][1], '1999-03-01')
+        intervals = MonthWithIntervals(month=2, year=1999).get_interval_list
+
+        self.assertEqual(intervals[0].open, '1999-02-02')
+        self.assertEqual(intervals[0].close, '1999-02-10')
+        self.assertEqual(intervals[1].open, '1999-02-11')
+        self.assertEqual(intervals[1].close, '1999-02-20')
+        self.assertEqual(intervals[2].open, '1999-02-21')
+        self.assertEqual(intervals[2].close, '1999-03-01')
 
     def test_dec_interval_has_correct_range(self):
-        interval = get_date_intervals(1999, 12)
-        self.assertEqual(interval[0][0], '1999-12-02')
-        self.assertEqual(interval[0][1], '1999-12-10')
-        self.assertEqual(interval[1][0], '1999-12-11')
-        self.assertEqual(interval[1][1], '1999-12-20')
-        self.assertEqual(interval[2][0], '1999-12-21')
-        self.assertEqual(interval[2][1], '1999-12-31')
+        intervals = MonthWithIntervals(month=12, year=1999).get_interval_list
+
+        self.assertEqual(intervals[0].open, '1999-12-02')
+        self.assertEqual(intervals[0].close, '1999-12-10')
+        self.assertEqual(intervals[1].open, '1999-12-11')
+        self.assertEqual(intervals[1].close, '1999-12-20')
+        self.assertEqual(intervals[2].open, '1999-12-21')
+        self.assertEqual(intervals[2].close, '1999-12-31')
 
     def test_get_fields_of_interest(self):
         foi = get_fields_of_interest(division)
@@ -48,10 +51,10 @@ class TestGetDateIntervals(TestCase):
     @mock.patch('requests.get')
     def test_download_division_with_vote_all_failures(self, mock_get):
         mock_response = get_mock_response(status=500)
-        interval = get_date_intervals(1999, 12)
+        intervals = MonthWithIntervals(month=12, year=1999)
         mock_get.return_value = mock_response
         with self.assertRaises(RuntimeError):
-            get_divisions(interval)
+            get_divisions(intervals)
 
     def test_increment_date_empty_set(self):
         mock_dates_memo = set()
