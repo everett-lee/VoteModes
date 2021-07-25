@@ -1,4 +1,22 @@
-TODO:
+## VoteModes
+
+### TL;DR
+
+This project downloads House of Commons voting data and uses 
+it as input for the K-modes clustering algorithm.  
+K-modes is implemented using Scala and deployed as an AWS Lambda.  
+A Python application - also deployed as an AWS Lambda - is used to download and process 
+the  data from the House of Commons API.   
+The results are converted to JSON and added to an S3 bucket. 
+
+### Infrastructure
+
+![K-modes infrastructure diagram](./infra-diagram.jpg "K-modes infrastructure")
+
+### Downloader Lambda
+
+### K-modes
+Why?
 
 ```json
 {
