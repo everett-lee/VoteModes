@@ -28,18 +28,18 @@ The data for each vote (division in HoC terminology) in the previous month is do
 `votes` endpoint.   
 
 The data available from this endpoint does not contain the information the application
-is actually interested in - the votes of each individual MP - so these
-division ids are used get this data from the `vote` endpoint.   
+is actually interested in - the votes of each individual MP - so the
+division ids returned for the month are used to query the `vote` endpoint.   
 
 To improve application performance, the voting data is downloaded in parallel.
 
-One concern of the application was how to handle cases where the MP was not present
-at the time of the vote. Rather than just counting 'for' and 'against' votes, I decided to
-add 'did not attend'. In order to prevent low-attendance votes from polluting the results, only
-those with > 60% attendance are considered.
+One notable concern was how to handle cases where an MP fails to attend a vote. Rather than just
+counting 'for' and 'against' votes, I decided to add a 'did not attend' category. 
+In order to prevent low-attendance votes from polluting the results, only those with > 60% attendance are considered.
 
-### K-modes
-Why?
+The resulting data is added to a DynamoDB,
+with the `Votes` value for each MP represented as a list of mappings
+from `DivisionId` -> `Vote` (Aye/No/NoAttend).  
 
 ### Example output
 ```json
