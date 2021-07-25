@@ -27,16 +27,14 @@ and converting it to a format that can be consumed by the K-modes algorithm.
 To this end, it pulls and processes the data on a monthly basis (using a cron expression), then updates a 
 DynamoDB database which is then accessed by the K-modes app.
 
-The data for each vote (division in HoC terminology) is access using thee
-`votes` endpoint using a query expression that filters only those that occurred in the month.   
-
-Unfortunately these votes do not contain the information the application
+The data for each vote (division in HoC terminology) is retrieved for the entire month
+`votes` endpoint. Unfortunately the resulting data does not contain the information the application
 is actually interested in - the votes of each individual MP - so the
-division ids returned for the month are the used to pull from the `vote` endpoint.   
+divisions ids are extracted and use to pull voting data from the `vote` endpoint.   
 
 To improve application performance, this voting data is downloaded in parallel.
 
-One notable concern to handle cases where an MP is absent from a vote. This would result in missing
+One notable concern involved handling cases where an MP is absent from a vote. Including these would result in missing
 data points and make processing each MP and their votes in an equivalent way difficult.
 Rather than just counting 'for' and 'against' votes, I decided to resolve the above issue by adding
 a 'did not attend' category. 
@@ -47,7 +45,7 @@ with the `Votes` value for each MP represented as a list of mappings
 from `DivisionId` -> `Vote` (Aye/No/NoAttend).  
 
 ### K-Modes lambda
-
+access using thee
 ### Example output
 ```json
 {
