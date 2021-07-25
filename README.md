@@ -17,7 +17,7 @@ that's no fun :)
 
 ### Infrastructure
 
-![K-modes infrastructure diagram](./infra-diagram.jpg "K-modes infrastructure")
+![K-modes infrastructure diagram](./infrastructure_diagram.jpg "K-modes infrastructure")
 
 ### Downloader Lambda
 
