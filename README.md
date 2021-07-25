@@ -21,25 +21,32 @@ that's no fun :)
 
 ### Downloader Lambda
 
-The downloader Lambda application is triggered using as cron job on the 3rd day of 
-each month.  
+The downloader Lambda application is concerned with pulling data from two endpoints
+and converting it to a format that can be consumed by the K-modes algorithm. 
 
-The data for each vote (division in HoC terminology) in the previous month is downloaded from the
-`votes` endpoint.   
+To this end, it pulls and processes the data on a monthly basis (using a cron expression), then updates a 
+DynamoDB database which is then accessed by the K-modes app.
 
-The data available from this endpoint does not contain the information the application
+The data for each vote (division in HoC terminology) is access using thee
+`votes` endpoint using a query expression that filters only those that occurred in the month.   
+
+Unfortunately these votes do not contain the information the application
 is actually interested in - the votes of each individual MP - so the
-division ids returned for the month are used to query the `vote` endpoint.   
+division ids returned for the month are the used to pull from the `vote` endpoint.   
 
-To improve application performance, the voting data is downloaded in parallel.
+To improve application performance, this voting data is downloaded in parallel.
 
-One notable concern was how to handle cases where an MP fails to attend a vote. Rather than just
-counting 'for' and 'against' votes, I decided to add a 'did not attend' category. 
-In order to prevent low-attendance votes from polluting the results, only those with > 60% attendance are considered.
+One notable concern to handle cases where an MP is absent from a vote. This would result in missing
+data points and make processing each MP and their votes in an equivalent way difficult.
+Rather than just counting 'for' and 'against' votes, I decided to resolve the above issue by adding
+a 'did not attend' category. 
+In order to prevent low-attendance divisions from polluting the results, only those with > 60% attendance are considered.
 
-The resulting data is added to a DynamoDB,
+The resulting data for each MP is added to a DynamoDB,
 with the `Votes` value for each MP represented as a list of mappings
 from `DivisionId` -> `Vote` (Aye/No/NoAttend).  
+
+### K-Modes lambda
 
 ### Example output
 ```json
