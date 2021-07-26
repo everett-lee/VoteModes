@@ -2,17 +2,17 @@
 
 ### TL;DR
 
-This project contains serverless applications that download House of Commons voting data
+This project contains serverless applications that download House of Commons (HoC) voting data
 for use as input to a K-modes clustering algorithm.  
 
 K-modes is implemented using Scala and deployed as an AWS Lambda.  
 
-A Python application - also deployed as an AWS Lambda - performs the download and processing tasks.   
+A Python application - also deployed as an AWS Lambda - performs the data download and processing tasks.   
 
 The outputs of the K-modes algorithm are converted to JSON and added to an S3 bucket.
 Each application accesses a shared DynamoDB database.  
 
-The above might beg the question: couldn't the whole all these steps be handled by a single app? Answer: yes, but
+The above might beg the question: couldn't these steps be handled by a single app? Answer: yes, but
 that's no fun :)
 
 ### Infrastructure
@@ -21,7 +21,7 @@ that's no fun :)
 
 ### Downloader Lambda
 
-The downloader Lambda fetches data from the House of Common's APIs, then converts
+The downloader Lambda fetches data from the HoC's APIs, then converts
 the results to a format suited to the K-modes algorithm. This Lambda is executed once monthly 
 using a cron expression.
 
@@ -35,11 +35,15 @@ only the total for and against counts.
 contain code to extract the division ids returned from `/divisions`
 for use as inputs for the HoC's `/division/{id}` endpoint.   
 
-To reduce the Lambda's execution time, each divisions' voting data is downloaded in parallel.
+To reduce the Lambda's execution time, each division's voting data is downloaded in parallel.
 
-The resulting data for each MP is then extracted from these divisions and used to update a 
-DynamoDB table, which contains a `Votes` value for each MP represented as a list of mappings
-from `DivisionId` -> `Vote` (Aye/No/NoAttend).  
+The resulting data for each MP is then extracted and used to update a 
+DynamoDB table containing data for each MP. This data is initialised manually using the (simplifying but wrong) 
+assumption that the list of MPs will remain unchanged between election years.
+
+The table contains a `Votes` value for each MP, represented as a list of mappings
+from `DivisionId` -> `Vote` (Aye/No/NoAttend). This, along with the `MemberId`, drives 
+the K-modes algorithm.
 
 ### K-Modes lambda
 Why k modes and not kmeans?  
