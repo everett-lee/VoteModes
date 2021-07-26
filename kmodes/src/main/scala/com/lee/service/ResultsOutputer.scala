@@ -28,7 +28,7 @@ class ResultsOutputer {
         mpDetailsMap.map { case (id, mps) =>
           (id.toString ->
             ("PartyCounts" -> getPartyStats(mps)) ~
-              ("Mps" -> mapMPDetailsToJson(mps))
+              ("MPs" -> mapMPDetailsToJson(mps))
             )
         }
         )

@@ -41,7 +41,7 @@ class TestGetDateIntervals(TestCase):
         self.assertEqual(intervals[2].close, '1999-12-31')
 
     def test_create_division(self):
-        division = Division(division_json)
+        division = Division(division_json, set())
         self.assertEqual(division.division_id, -1)
         self.assertEqual(division.date, '2021-04-28T16:54:00')
         self.assertEqual(division.title,
@@ -58,32 +58,24 @@ class TestGetDateIntervals(TestCase):
             get_divisions(intervals)
 
     def test_increment_date_empty_set(self):
-        division = Division(division_json)
-        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = Division.increment_date(division, input_date)
-
-        self.assertEqual(updated, '2021-05-17T11:59:59')
+        division_json['Date'] = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        division = Division(division_json, set())
+        self.assertEqual(division.date, '2021-05-17T11:59:59')
 
     def test_increment_date_one_date_clash(self):
-        division = Division(division_json)
-        division.dates_memo = {'2021-05-17T11:59:59'}
-        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = Division.increment_date(division, input_date)
-
-        self.assertEqual(updated, '2021-05-17T12:00:00')
+        division_json['Date'] = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        saved = {'2021-05-17T11:59:59'}
+        division = Division(division_json, saved)
+        self.assertEqual(division.date, '2021-05-17T12:00:00')
 
     def test_increment_date_two_date_clashes(self):
-        division = Division(division_json)
-        division.dates_memo = {'2021-05-17T11:59:59', '2021-05-17T12:00:00'}
-        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = Division.increment_date(division, input_date)
-
-        self.assertEqual(updated, '2021-05-17T12:00:01')
+        division_json['Date'] = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        saved = {'2021-05-17T11:59:59', '2021-05-17T12:00:00'}
+        division = Division(division_json, saved)
+        self.assertEqual(division.date, '2021-05-17T12:00:01')
 
     def test_increment_date_one_date_clash_one_unrelated(self):
-        division = Division(division_json)
-        division.dates_memo = {'2021-05-17T11:59:59', '2021-06-17T12:20:00'}
-        input_date = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
-        updated = Division.increment_date(division, input_date)
-
-        self.assertEqual(updated, '2021-05-17T12:00:00')
+        division_json['Date'] = datetime(2021, 5, 17, 11, 59, 59).strftime("%Y-%m-%dT%H:%M:%S%z")
+        saved = {'2021-05-17T11:59:59', '2021-06-17T12:20:00'}
+        division = Division(division_json, saved)
+        self.assertEqual(division.date, '2021-05-17T12:00:00')

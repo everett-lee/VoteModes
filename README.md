@@ -12,7 +12,7 @@ A Python application - also deployed as an AWS Lambda - performs the download an
 The outputs of the K-modes algorithm are converted to JSON and added to an S3 bucket.
 Each application accesses a shared DynamoDB database.  
 
-The above might beg the question: couldn't the whole process be handled by a single app? Answer: yes, but
+The above might beg the question: couldn't the whole all these steps be handled by a single app? Answer: yes, but
 that's no fun :)
 
 ### Infrastructure
@@ -21,75 +21,210 @@ that's no fun :)
 
 ### Downloader Lambda
 
-The downloader Lambda application is concerned with pulling data from two endpoints
-and converting it to a format that can be consumed by the K-modes algorithm. 
+The downloader Lambda fetches data from the House of Common's APIs, then converts
+the results to a format suited to the K-modes algorithm. This Lambda is executed once monthly 
+using a cron expression.
 
-To this end, it pulls and processes the data on a monthly basis (using a cron expression), then updates a 
-DynamoDB database which is then accessed by the K-modes app.
+`divisions_list_downloader.py` handles fetching vote (division in HoC terminology)  
+data from the `/divisions` endpoint using helper functions in
+`divisions/downloaders.py`. 
 
-The data for each vote (division in HoC terminology) is retrieved for the entire month
-`votes` endpoint. Unfortunately the resulting data does not contain the information the application
-is actually interested in - the votes of each individual MP - so the
-divisions ids are extracted and use to pull voting data from the `vote` endpoint.   
+Unfortunately, this division data does not contain the vote data for individual MPs, 
+only the total for and against counts. 
+`votes_per_division_downloader.py` and its helpers in `votes_per_divisions/downloaders.py`
+contain code to extract the division ids returned from `/divisions`
+for use as inputs for the HoC's `/division/{id}` endpoint.   
 
-To improve application performance, this voting data is downloaded in parallel.
+To reduce the Lambda's execution time, each divisions' voting data is downloaded in parallel.
 
-One notable concern involved handling cases where an MP is absent from a vote. Including these would result in missing
-data points and make processing each MP and their votes in an equivalent way difficult.
-Rather than just counting 'for' and 'against' votes, I decided to resolve the above issue by adding
-a 'did not attend' category. 
-In order to prevent low-attendance divisions from polluting the results, only those with > 60% attendance are considered.
-
-The resulting data for each MP is added to a DynamoDB,
-with the `Votes` value for each MP represented as a list of mappings
+The resulting data for each MP is then extracted from these divisions and used to update a 
+DynamoDB table, which contains a `Votes` value for each MP represented as a list of mappings
 from `DivisionId` -> `Vote` (Aye/No/NoAttend).  
 
 ### K-Modes lambda
-access using thee
-### Example output
+Why k modes and not kmeans?  
+select k, now = 5
+Triggered when downloaeder finishes  
+Parse db data  
+Select starting centroids   
+Group by 'distance' -> Reculate using mode -> repeat until stable of max iters  
+Convert to JSON -> push to S3  
+
+### Example (truncated to six MPs per cluster) output
 ```json
 {
     "Clusters": {
-        "1": {
-            "Mps": [
+        "4747": {
+            "PartyCounts": {
+                "Social Democratic & Labour Party": 2,
+                "Alba Party": 2,
+                "Independent": 2,
+                "Scottish National Party": 44,
+                "Plaid Cymru": 3
+            },
+            "MPs": [
                 {
-                    "Name": "Arry Kane",
-                    "Party": "Engerland"
+                    "Name": "Hywel Williams",
+                    "Party": "Plaid Cymru"
                 },
                 {
-                    "Name": "Mase",
-                    "Party": "Engerland"
+                    "Name": "Pete Wishart",
+                    "Party": "Scottish National Party"
                 },
                 {
-                    "Name": "Richard D James",
-                    "Party": "Big Face"
+                    "Name": "Stewart Hosie",
+                    "Party": "Scottish National Party"
+                },
+                {
+                    "Name": "Angus Brendan MacNeil",
+                    "Party": "Scottish National Party"
+                },
+                {
+                    "Name": "Jonathan Edwards",
+                    "Party": "Independent"
+                },
+                {
+                    "Name": "Kirsty Blackman",
+                    "Party": "Scottish National Party"
                 }
-            ],
-            "Stats": {
-                "Engerland": 2,
-                "Big Face": 1
-            }
+            ]
         },
-        "2": {
-            "Mps": [
+        "4645": {
+            "PartyCounts": {
+                "Conservative": 3,
+                "Sinn Féin": 7,
+                "Labour": 1,
+                "Speaker": 1
+            },
+            "MPs": [
                 {
-                    "Name": "David Lynch",
-                    "Party": "Black Lodge"
+                    "Name": "Dame Eleanor Laing",
+                    "Party": "Conservative"
                 },
                 {
-                    "Name": "Dale Cooper",
-                    "Party": "Black Lodge"
+                    "Name": "Sir Christopher Chope",
+                    "Party": "Conservative"
                 },
                 {
-                    "Name": "Travolta",
-                    "Party": "Royale With Cheese"
+                    "Name": "Dame Rosie Winterton",
+                    "Party": "Labour"
+                },
+                {
+                    "Name": "Sir Lindsay Hoyle",
+                    "Party": "Speaker"
+                },
+                {
+                    "Name": "Mr Nigel Evans",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Michelle Gildernew",
+                    "Party": "Sinn Féin"
                 }
-            ],
-            "Stats": {
-                "Black Lodge": 2,
-                "Royale With Cheese": 1
-            }
+            ]
+        },
+        "4529": {
+            "PartyCounts": {
+                "Conservative": 97,
+                "Democratic Unionist Party": 5
+            },
+            "MPs": [
+                {
+                    "Name": "Mrs Theresa May",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Sir Bernard Jenkin",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Sir Roger Gale",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Sir Paul Beresford",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Sajid Javid",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Boris Johnson",
+                    "Party": "Conservative"
+                }
+            ]
+        },
+        "4522": {
+            "PartyCounts": {
+                "Conservative": 263,
+                "Independent": 1,
+                "Democratic Unionist Party": 3
+            },
+            "MPs": [
+               {
+                    "Name": "Rishi Sunak",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Will Quince",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Mr Mark Francois",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Priti Patel",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Penny Mordaunt",
+                    "Party": "Conservative"
+                },
+                {
+                    "Name": "Grant Shapps",
+                    "Party": "Conservative"
+                }
+            ]
+        },
+        "483": {
+            "PartyCounts": {
+                "Green Party": 1,
+                "Alliance": 1,
+                "Labour": 172,
+                "Labour (Co-op)": 25,
+                "Independent": 2,
+                "Liberal Democrat": 11
+            },
+            "MPs": [
+              {
+                    "Name": "Keir Starmer",
+                    "Party": "Labour"
+                },
+                {
+                    "Name": "Dr Alan Whitehead",
+                    "Party": "Labour"
+                },
+                {
+                    "Name": "Dame Margaret Hodge",
+                    "Party": "Labour"
+                },
+                {
+                    "Name": "Edward Miliband",
+                    "Party": "Labour"
+                },
+                {
+                    "Name": "Ms Harriet Harman",
+                    "Party": "Labour"
+                },
+                {
+                    "Name": "Ms Diane Abbott",
+                    "Party": "Labour"
+                }
+            ]
         }
     }
 }
+
 ```
