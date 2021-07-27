@@ -29,8 +29,8 @@ using a cron expression.
 data from the `/divisions` endpoint using helper functions in
 `divisions/downloaders.py`. 
 
-Unfortunately, this division data does not contain the vote data for individual MPs, 
-only the total for and against counts. 
+Unfortunately, this division data does not contain the votes cast for individual MPs, 
+only the total for and against counts. As such,
 `votes_per_division_downloader.py` and its helpers in `votes_per_divisions/downloaders.py`
 contain code to extract the division ids returned from `/divisions`
 for use as inputs for the HoC's `/division/{id}` endpoint.   
@@ -41,14 +41,43 @@ The resulting data for each MP is then extracted and used to update a
 DynamoDB table containing data for each MP. This data is initialised manually using the (simplifying but wrong) 
 assumption that the list of MPs will remain unchanged between election years.
 
-The table contains a `Votes` value for each MP, represented as a list of mappings
+The table contains a `Votes` value for each MP, representing their votes as a list of mappings
 from `DivisionId` -> `Vote` (Aye/No/NoAttend). This, along with the `MemberId`, drives 
 the K-modes algorithm.
 
 ### K-Modes lambda
-Why k modes and not kmeans?  
+
+The K-Modes algorithm is written in Scala and also executed as a Lambda. Instead of 
+running on a schedule, the K-Modes lambda is triggered using a subscription to an SQS 
+queue. Messages in this queue are produced by the downloader lambda.
+
+K-Modes was selected for this data, in place of better-known K-means algorithm, as
+the  input is categorical (categories of vote cast). This makes it difficult to 
+represent the data numerically (should a 'No Attend' be closer to a 'No' 
+than a 'Yes' is?) as input to the distance formula.
+
+With K-Modes, each MP is instead checked to see how much he or she 'agrees' with current centroid
+by comparing their votes cast for each division. If they voted the same way, their
+agreement score is incremented, otherwise the next vote is checked. This alternative
+implementation of the distance function is listed in `CentroidsHelperMain.scala`:
+
+```scala
+  @tailrec
+  final override def calculateDistance(votes: List[VotePair], centroid: List[VotePair], acc: Int = 0): Int = {
+    require(votes.size == centroid.size, "Vote sizes must match")
+
+    votes match {
+      case Nil => acc
+      case x :: xs =>
+        require(x.divisionId == centroid.head.divisionId, "Divisions Ids must match")
+        val res = if (x.voteDecision != centroid.head.voteDecision) 1 else 0
+        calculateDistance(xs, centroid.tail, acc + res)
+    }
+  }
+```
+
+
 select k, now = 5
-Triggered when downloaeder finishes  
 Parse db data  
 Select starting centroids   
 Group by 'distance' -> Reculate using mode -> repeat until stable of max iters  

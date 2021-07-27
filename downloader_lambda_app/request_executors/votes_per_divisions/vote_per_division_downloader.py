@@ -62,9 +62,9 @@ def get_mp_ids(mps_table: object) -> Set[int]:
 
 def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> None:
     """
-    Takes dict mapping each MP to their votes. These pairs are
-    iterated over, already-processed votes are removed,
-    and the list of votes for each MP is updated.
+    Takes dict mapping each MP id to the corresponding votes. These votes (mappings from
+    divisionId -> Aye/No/NoAttend) are iterated over, already-processed vote ids
+    are removed, and the list of votes for each MP is updated.
     """
 
     def get_duplicate_ids(mp_id: int, list_votes: List[Dict[str, str]]) -> Set[int]:
@@ -84,7 +84,7 @@ def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> Non
             duplicate_ids = existing_vote_ids.intersection(new_vote_ids)
 
             if len(duplicate_ids) > 0:
-                logging.error('Votes with these ids have been processed already: %s', duplicate_ids)
+                logging.error('Votes with these ids have already been processed: %s', duplicate_ids)
 
             return duplicate_ids
 
