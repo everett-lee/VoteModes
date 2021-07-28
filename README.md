@@ -47,19 +47,19 @@ the K-modes algorithm.
 
 ### K-Modes lambda
 
-The K-Modes algorithm is written in Scala and also executed as a Lambda. Instead of 
-running on a schedule, the K-Modes lambda is triggered using a subscription to an SQS 
-queue. Messages in this queue are produced by the downloader lambda.
+The K-Modes app is written in Scala and deployed as a Lambda. Instead of 
+running on a schedule, it is triggered each time the downloader lambda sends
+a message to a shared SQS.
 
-K-Modes was selected for this data, in place of better-known K-means algorithm, as
-the input is categorical (categories of vote cast). This makes it difficult to 
-represent the data numerically (should a 'No Attend' be closer to a 'No' 
-than a 'Yes' is?) as input to the distance formula.
+As the input data is categorical (categories of vote cast), K-Modes is used
+in place of better-known K-means algorithm. The categorical nature of the voting
+data makes it difficult to represent numerically (should a 'No Attend' be closer to a 'No' 
+than a 'Yes' is?) making the standard Euclidean distance formula unhelpful.
 
 The Lambda starts by fetching and parsing the DynamoDB voting data, then randomly
-initialises K centroids.
+selecting K mps as the centroids.
 
-With K-Modes, each MP is instead checked to see how much he or she 'agrees' with a centroid
+Each MP is then checked to see how much he or she 'agrees' with a centroid
 by comparing the votes cast for each division. If the votes differ, the
 distance score is incremented, otherwise the next vote is checked. A perfect match
 against the centroid would return a result of 0. This alternative
@@ -112,11 +112,11 @@ centroids are created by finding the most common voting decision
     val votes = mpsWithVotes.map(mp => mp.votes).toList
     val centroidVotes = recursiveHelper(votes, List())
     MPWithVotes(centroidId, "","", centroidVotes.reverse)
-  }
+  }occuror
 ```
 
 The `KModes` class in responsible for repeating the clustering and centroid
-creation steps until a fixed number of iterations occuror the clusters remain
+creation steps until a fixed number of iterations occur, or the clusters remain
 stable between iterations.
 
 Once the clustering process is finished, the results are converted to JSON and 

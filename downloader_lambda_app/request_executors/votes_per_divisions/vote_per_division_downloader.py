@@ -10,10 +10,12 @@ from .downloaders import download_all_divisions_with_votes_async
 from ..boto3_helpers.client_wrapper import get_table
 
 TOTAL_MPS = 650
+VoteIdToVoteMap = Dict[int, str]
+MPToVotesMap = Dict[int, VoteIdToVoteMap]
 
 
 def map_divisions_with_votes_to_mps(divisions_with_votes: List[DivisionWithVotes],
-                                    mp_ids: Set[int]) -> Dict[int, Dict[int, str]]:
+                                    mp_ids: Set[int]) -> MPToVotesMap:
     """
     Takes a list of DivisionWithVotes and a set of MP ids.
     Returns a dict of MP ids mapped to a dict of each division id and the MP's
@@ -60,7 +62,7 @@ def get_mp_ids(mps_table: object) -> Set[int]:
     return {int(item['MemberId']) for item in items}
 
 
-def set_votes(mps_to_votes: Dict[int, Dict[int, str]], mps_table: object) -> None:
+def set_votes(mps_to_votes: MPToVotesMap, mps_table: object) -> None:
     """
     Takes dict mapping each MP id to the corresponding votes. These votes (mappings from
     divisionId -> Aye/No/NoAttend) are iterated over, already-processed vote ids

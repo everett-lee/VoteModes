@@ -102,7 +102,7 @@ class IntegrationTests(TestCase):
         self.assert_queue()
 
     def assert_votes(self, mp_votes, first_vote, second_vote, third_vote=None, fourth_vote=None):
-        mp_votes = sorted(mp_votes, key=lambda mp_votes: mp_votes['DivisionId'] * -1)
+        mp_votes = sorted(mp_votes, key=lambda mp_votes: int(mp_votes['DivisionId']) * -1)
         self.assertEqual(mp_votes[0]['Vote'], first_vote)
         self.assertEqual(mp_votes[1]['Vote'], second_vote)
 
