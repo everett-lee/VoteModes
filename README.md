@@ -52,13 +52,17 @@ running on a schedule, the K-Modes lambda is triggered using a subscription to a
 queue. Messages in this queue are produced by the downloader lambda.
 
 K-Modes was selected for this data, in place of better-known K-means algorithm, as
-the  input is categorical (categories of vote cast). This makes it difficult to 
+the input is categorical (categories of vote cast). This makes it difficult to 
 represent the data numerically (should a 'No Attend' be closer to a 'No' 
 than a 'Yes' is?) as input to the distance formula.
 
-With K-Modes, each MP is instead checked to see how much he or she 'agrees' with current centroid
-by comparing their votes cast for each division. If they voted the same way, their
-agreement score is incremented, otherwise the next vote is checked. This alternative
+The Lambda starts by fetching and parsing the DynamoDB voting data, then randomly
+initialises K centroids.
+
+With K-Modes, each MP is instead checked to see how much he or she 'agrees' with a centroid
+by comparing their votes cast for each division. If the votes differ, the
+distance score is incremented, otherwise the next vote is checked. A perfect match
+against the centroid would return a result of 0. This alternative
 implementation of the distance function is listed in `CentroidsHelperMain.scala`:
 
 ```scala
@@ -76,12 +80,44 @@ implementation of the distance function is listed in `CentroidsHelperMain.scala`
   }
 ```
 
+Following this, the `groupByCentroid` function re-clusters the data, and new
+centroids are created by finding the most common voting decision
+(i.e., the mode) for each vote in the cluster:
 
-select k, now = 5
-Parse db data  
-Select starting centroids   
-Group by 'distance' -> Reculate using mode -> repeat until stable of max iters  
-Convert to JSON -> push to S3  
+```scala
+  override def calculateCentroid(mpsWithVotes: Vector[MPWithVotes], centroidId: Int): MPWithVotes = {
+
+    @tailrec
+    def recursiveHelper(votes: List[List[VotePair]], res: List[VotePair]): List[VotePair] = {
+      votes.head match {
+        case Nil => res
+        case x :: xs => {
+          val heads = votes.map(inList => inList.head)
+          val tails = votes.map(inList => inList.tail)
+          val mode = heads.groupBy(identity)
+            // find the largest grouping of votes and return the corresponding VotePair
+            .maxBy({
+              case (votePair, votes) =>
+                votes.size + (votePair.voteDecision.toString.length / 100.0) // add this as a tiebreaker
+            })._1
+
+          recursiveHelper(tails, mode :: res)
+        }
+      }
+    }
+
+    val votes = mpsWithVotes.map(mp => mp.votes).toList
+    val centroidVotes = recursiveHelper(votes, List())
+    MPWithVotes(centroidId, "","", centroidVotes.reverse)
+  }
+```
+
+The `KModes` class in responsible for repeating the clustering and centroid
+creation steps until a fixed number of iterations occuror the clusters remain
+stable between iterations.
+
+Once the clustering process is finished, the results are converted to JSON and 
+pushed to an S3 bucket.  
 
 ### Example (truncated to six MPs per cluster) output
 ```json

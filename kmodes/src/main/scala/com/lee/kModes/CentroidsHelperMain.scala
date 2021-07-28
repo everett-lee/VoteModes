@@ -46,6 +46,7 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
           val heads = votes.map(inList => inList.head)
           val tails = votes.map(inList => inList.tail)
           val mode = heads.groupBy(identity)
+            // find the largest grouping of votes and return the corresponding VotePair
             .maxBy({
               case (votePair, votes) =>
                 votes.size + (votePair.voteDecision.toString.length / 100.0) // add this as a tiebreaker
