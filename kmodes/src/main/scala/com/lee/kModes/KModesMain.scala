@@ -1,6 +1,7 @@
 package com.lee.kModes
 
 import com.lee.constants.Constants
+import com.lee.kModes.KModesMain.getEnvironmentVarOrDefault
 import com.lee.model.{MPDetails, MPWithVotes, VotePair}
 import com.typesafe.scalalogging.Logger
 
@@ -8,10 +9,10 @@ import scala.annotation.tailrec
 
 class KModesMain(centroidsHelper: CentroidsHelper[Vector[MPWithVotes], List[VotePair]])
   extends KModes[Vector[MPWithVotes], Vector[MPDetails]] {
-  val K = sys.env("K_VALUE").toInt
-  private val MAX_ITERATIONS = sys.env("MAX_ITERATIONS").toInt
+  val K: Int = getEnvironmentVarOrDefault("K_VALUE", 3)
+  private val MAX_ITERATIONS = getEnvironmentVarOrDefault("MAX_ITERATIONS", 100)
   private var lastClusters: Map[Int, Vector[MPWithVotes]] = Map()
-  val logger = Logger(Constants.loggerName)
+  val logger: Logger = Logger(Constants.loggerName)
 
   @tailrec
   final private def looper(inMps: Vector[MPWithVotes], inCentroids: Vector[MPWithVotes], iteration: Int): Vector[MPWithVotes] = {
@@ -50,5 +51,9 @@ class KModesMain(centroidsHelper: CentroidsHelper[Vector[MPWithVotes], List[Vote
 object KModesMain {
   def apply(centroidsHelper: CentroidsHelper[Vector[MPWithVotes], List[VotePair]] = new CentroidsHelperMain()): KModesMain = {
     new KModesMain(centroidsHelper)
+  }
+
+  def getEnvironmentVarOrDefault(key: String, default: Int): Int = {
+    if (System.getenv().containsKey(key)) sys.env(key).toInt else default;
   }
 }

@@ -49,7 +49,8 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
             // find the largest grouping of votes and return the corresponding VotePair
             .maxBy({
               case (votePair, votes) =>
-                votes.size + (votePair.voteDecision.toString.length / 100.0) // add this as a tiebreaker
+                val tiebreaker = votePair.voteDecision.toString.length / 100.0
+                votes.size + tiebreaker
             })._1
 
           recursiveHelper(tails, mode :: res)
@@ -61,6 +62,4 @@ class CentroidsHelperMain extends CentroidsHelper[Vector[MPWithVotes], List[Vote
     val centroidVotes = recursiveHelper(votes, List())
     MPWithVotes(centroidId, "","", centroidVotes.reverse)
   }
-
-
 }

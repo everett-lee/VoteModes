@@ -60,7 +60,7 @@ The Lambda starts by fetching and parsing the DynamoDB voting data, then randoml
 initialises K centroids.
 
 With K-Modes, each MP is instead checked to see how much he or she 'agrees' with a centroid
-by comparing their votes cast for each division. If the votes differ, the
+by comparing the votes cast for each division. If the votes differ, the
 distance score is incremented, otherwise the next vote is checked. A perfect match
 against the centroid would return a result of 0. This alternative
 implementation of the distance function is listed in `CentroidsHelperMain.scala`:
@@ -80,9 +80,11 @@ implementation of the distance function is listed in `CentroidsHelperMain.scala`
   }
 ```
 
+
 Following this, the `groupByCentroid` function re-clusters the data, and new
 centroids are created by finding the most common voting decision
 (i.e., the mode) for each vote in the cluster:
+
 
 ```scala
   override def calculateCentroid(mpsWithVotes: Vector[MPWithVotes], centroidId: Int): MPWithVotes = {
@@ -98,7 +100,8 @@ centroids are created by finding the most common voting decision
             // find the largest grouping of votes and return the corresponding VotePair
             .maxBy({
               case (votePair, votes) =>
-                votes.size + (votePair.voteDecision.toString.length / 100.0) // add this as a tiebreaker
+                val tiebreaker = votePair.voteDecision.toString.length / 100.0
+                votes.size + tiebreaker
             })._1
 
           recursiveHelper(tails, mode :: res)
