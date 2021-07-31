@@ -194,5 +194,5 @@ aws-lambda-rie
 validator.py
 
 # SBT
-.sbt
+.bsp/
 .sbt
