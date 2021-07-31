@@ -2,14 +2,14 @@
 
 ### TL;DR
 
-This project contains serverless applications that download House of Commons (HoC) voting data
+This repo contains serverless applications that download House of Commons (HoC) voting data
 for use as input to a K-modes clustering algorithm.  
 
 K-modes is implemented using Scala and deployed as an AWS Lambda.  
 
 A Python application - also deployed as an AWS Lambda - performs the data download and processing tasks.   
 
-The outputs of the K-modes algorithm are converted to JSON and added to an S3 bucket.
+The output of the K-modes algorithm is converted to JSON and added to an S3 bucket.
 Each application accesses a shared DynamoDB database.  
 
 The above might beg the question: couldn't these steps be handled by a single app? Answer: yes, but
@@ -22,8 +22,8 @@ that's no fun :)
 ### Downloader Lambda
 
 The downloader Lambda fetches data from the HoC's APIs, then converts
-the results to a format suited to the K-modes algorithm. This Lambda is executed once monthly 
-using a cron expression.
+the results to a format suited to the K-modes algorithm. This Lambda is 
+executed once monthly (with the timing defined by a cron expression).
 
 `divisions_list_downloader.py` handles fetching vote (division in HoC terminology)  
 data from the `/divisions` endpoint using helper functions in
@@ -51,13 +51,13 @@ The K-Modes app is written in Scala and deployed as a Lambda. Instead of
 running on a schedule, it is triggered each time the downloader lambda sends
 a message to a shared SQS.
 
-As the input data is categorical (categories of vote cast), K-Modes is used
-in place of better-known K-means algorithm. The categorical nature of the voting
+As the input data is categorical (categories of vote cast), K-modes is used
+in place of the better-known K-means algorithm. The categorical nature of voting
 data makes it difficult to represent numerically (should a 'No Attend' be closer to a 'No' 
-than a 'Yes' is?) making the standard Euclidean distance formula unhelpful.
+than a 'Yes' is?), so the standard Euclidean distance approach is unhelpful.
 
 The Lambda starts by fetching and parsing the DynamoDB voting data, then randomly
-selecting K mps as the centroids.
+selects K mps as the centroids.
 
 Each MP is then checked to see how much he or she 'agrees' with a centroid
 by comparing the votes cast for each division. If the votes differ, the
@@ -112,7 +112,7 @@ centroids are created by finding the most common voting decision
     val votes = mpsWithVotes.map(mp => mp.votes).toList
     val centroidVotes = recursiveHelper(votes, List())
     MPWithVotes(centroidId, "","", centroidVotes.reverse)
-  }occuror
+  }
 ```
 
 The `KModes` class in responsible for repeating the clustering and centroid
