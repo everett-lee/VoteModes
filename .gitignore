@@ -192,3 +192,7 @@ aws-lambda-rie
 
 # Data validation script
 validator.py
+
+# SBT
+.sbt
+.sbt
