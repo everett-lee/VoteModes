@@ -2,8 +2,10 @@
 
 ### TL;DR
 
-This repo contains serverless applications that download House of Commons (HoC) voting data
-for use as input to a K-modes clustering algorithm.  
+This repo contains serverless applications for performing the K-modes 
+clustering algorithm on House of Commons (HoC) voting data. The aim - besides
+trying out new technologies - was to find out if the clusters would overlap 
+with party membership. Spoiler: they largely did.
 
 K-modes is implemented using Scala and deployed as an AWS Lambda.  
 

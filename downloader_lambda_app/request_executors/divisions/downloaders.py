@@ -9,6 +9,7 @@ from divisions.month_with_intervals import MonthWithIntervals
 
 URL_SEARCH_DIVISIONS = 'https://commonsvotes-api.parliament.uk/data/divisions.json/search'
 
+
 def create_division(div: dict, saved_dates: set) -> Division:
     date = div['Date'].strip()
     saved_dates.add(date)
@@ -28,7 +29,6 @@ def get_divisions(intervals: MonthWithIntervals) -> List[Division]:
                 error = "failed to download interval: {interval}".format(interval=interval)
                 logging.error(error)
                 raise RuntimeError(error)
-
 
             downloaded_divisions += [create_division(div, saved_dates) for div in json.loads(res.text)]
 

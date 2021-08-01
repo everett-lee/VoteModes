@@ -11,11 +11,11 @@ from ..boto3_helpers.client_wrapper import get_table
 
 TOTAL_MPS = 650
 VoteIdToVoteMap = Dict[int, str]
-MPToVotesMap = Dict[int, VoteIdToVoteMap]
+MPIdToVotesMap = Dict[int, VoteIdToVoteMap]
 
 
 def map_divisions_with_votes_to_mps(divisions_with_votes: List[DivisionWithVotes],
-                                    mp_ids: Set[int]) -> MPToVotesMap:
+                                    mp_ids: Set[int]) -> MPIdToVotesMap:
     """
     Takes a list of DivisionWithVotes and a set of MP ids.
     Returns a dict of MP ids mapped to a dict of each division id and the MP's
@@ -42,45 +42,45 @@ def get_mp_ids(mps_table: object) -> Set[int]:
     Gets all MP ids stored in the database
     """
 
-    results = mps_table.query(
+    mp_ids_request = mps_table.query(
         KeyConditionExpression=Key('MPElectionYear').eq(2019),
         ProjectionExpression='MemberId'
     )
-    items = results['Items']
+    items = mp_ids_request['Items']
 
-    while 'LastEvaluatedKey' in results:
-        if results['ResponseMetadata']['HTTPStatusCode'] != 200:
+    while 'LastEvaluatedKey' in mp_ids_request:
+        if mp_ids_request['ResponseMetadata']['HTTPStatusCode'] != 200:
             logging.error('Failure when fetching MP ids')
 
-        results = mps_table.query(
+        mp_ids_request = mps_table.query(
             KeyConditionExpression=Key('MPElectionYear').eq(2019),
             ProjectionExpression='MemberId',
-            ExclusiveStartKey=results['LastEvaluatedKey']
+            ExclusiveStartKey=mp_ids_request['LastEvaluatedKey']
         )
-        items += results['Items']
+        items += mp_ids_request['Items']
 
     return {int(item['MemberId']) for item in items}
 
 
-def set_votes(mps_to_votes: MPToVotesMap, mps_table: object) -> None:
+def set_votes(mps_to_votes: MPIdToVotesMap, mps_table: object) -> None:
     """
     Takes dict mapping each MP id to the corresponding votes. These votes (mappings from
     divisionId -> Aye/No/NoAttend) are iterated over, already-processed vote ids
     are removed, and the list of votes for each MP is updated.
     """
 
-    def get_duplicate_ids(mp_id: int, list_votes: List[Dict[str, str]]) -> Set[int]:
+    def get_duplicate_ids(mp_id: int, list_votes: List[VoteIdToVoteMap]) -> Set[int]:
         new_vote_ids = {int(vote['DivisionId']) for vote in list_votes}
 
-        res = mps_table.query(
+        existing_votes_request = mps_table.query(
             KeyConditionExpression=Key('MPElectionYear').eq(2019) & Key('MemberId').eq(mp_id),
             ProjectionExpression='Votes'
         )
 
-        if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+        if existing_votes_request['ResponseMetadata']['HTTPStatusCode'] != 200:
             logging.error('Failed to validate votes for mp with id %s', mp_id)
         else:
-            existing_votes = res['Items'][0]['Votes']
+            existing_votes = existing_votes_request['Items'][0]['Votes']
             existing_vote_ids = {int(vote['DivisionId']) for vote in existing_votes}
 
             duplicate_ids = existing_vote_ids.intersection(new_vote_ids)
@@ -96,7 +96,7 @@ def set_votes(mps_to_votes: MPToVotesMap, mps_table: object) -> None:
         filtered_list_votes = [vote_pair for vote_pair in list_votes
                                if (int(vote_pair['DivisionId']) not in duplicate_ids)]
 
-        res = mps_table.update_item(
+        update_mp_votes_request = mps_table.update_item(
             Key={
                 'MPElectionYear': 2019,
                 'MemberId': int(mp_id)
@@ -108,7 +108,7 @@ def set_votes(mps_to_votes: MPToVotesMap, mps_table: object) -> None:
             ReturnValues="UPDATED_NEW"
         )
 
-        if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+        if update_mp_votes_request['ResponseMetadata']['HTTPStatusCode'] != 200:
             logging.error('failed to update votes for mp with id %s', mp_id)
 
 
@@ -119,9 +119,7 @@ def download_votes_per_division(divisions: List[Division]) -> None:
     mps_table = get_table('MPs')
 
     mp_ids = get_mp_ids(mps_table)
-
     with_good_attendance = [div for div in divisions if has_good_attendance(div)]
-
     divisions_with_votes = download_all_divisions_with_votes_async(with_good_attendance, mp_ids)
 
     assert (len(with_good_attendance) == len(divisions_with_votes))
