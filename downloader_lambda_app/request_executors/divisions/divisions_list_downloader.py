@@ -5,8 +5,6 @@ from typing import List
 from .division import Division
 from .month_with_intervals import MonthWithIntervals
 
-sys.path.append('..')
-
 from ..boto3_helpers.client_wrapper import get_table
 from .downloaders import get_divisions
 

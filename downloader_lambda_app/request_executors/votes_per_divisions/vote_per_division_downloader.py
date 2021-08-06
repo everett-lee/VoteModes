@@ -4,7 +4,7 @@ from typing import List, Set, Dict
 
 from boto3.dynamodb.conditions import Key
 
-from divisions.division import Division
+from ..divisions.division import Division
 from .division_with_votes import DivisionWithVotes
 from .downloaders import download_all_divisions_with_votes_async
 from ..boto3_helpers.client_wrapper import get_table

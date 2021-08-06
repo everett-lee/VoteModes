@@ -4,8 +4,8 @@ from typing import List
 
 import requests
 
-from divisions.division import Division
-from divisions.month_with_intervals import MonthWithIntervals
+from .division import Division
+from .month_with_intervals import MonthWithIntervals
 
 URL_SEARCH_DIVISIONS = 'https://commonsvotes-api.parliament.uk/data/divisions.json/search'
 

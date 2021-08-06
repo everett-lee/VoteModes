@@ -6,7 +6,7 @@ from typing import List, Set, Dict
 
 import requests
 
-from divisions.division import Division
+from ..divisions.division import Division
 from .division_with_votes import DivisionWithVotes
 from .multithreaded.time_it import timeit
 
