@@ -35,3 +35,8 @@ resource "aws_lambda_permission" "cloudwatch_trigger_permission" {
     principal = "events.amazonaws.com"
     source_arn = aws_cloudwatch_event_rule.cron_rule.arn
 }
+
+resource "aws_cloudwatch_event_target" "cron_target" {
+  rule  = aws_cloudwatch_event_rule.cron_rule.name
+  arn   = aws_lambda_function.lambda.arn
+}
