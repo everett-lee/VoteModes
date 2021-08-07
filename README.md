@@ -2,8 +2,9 @@
 
 ### TL;DR
 
-This repo contains serverless applications for performing the K-modes 
-clustering algorithm on House of Commons (HoC) voting data. The aim - besides
+This repo contains serverless applications that download and process 
+House of Commons (HoC) voting data and use the results as input to the K-modes 
+clustering algorithm. The aim - besides
 trying out new technologies - was to find out if the clusters would overlap 
 with party membership. Spoiler: they largely did.
 
@@ -12,10 +13,7 @@ K-modes is implemented using Scala and deployed as an AWS Lambda.
 A Python application - also deployed as an AWS Lambda - performs the data download and processing tasks.   
 
 The output of the K-modes algorithm is converted to JSON and added to an S3 bucket.
-Each application accesses a shared DynamoDB database.  
-
-The above might beg the question: couldn't these steps be handled by a single app? Answer: yes, but
-that's no fun :)
+Each application accesses a shared DynamoDB database.
 
 ### Infrastructure
 
@@ -35,7 +33,7 @@ Unfortunately, this division data does not contain the votes cast for individual
 only the total for and against counts. As such,
 `votes_per_division_downloader.py` and its helpers in `votes_per_divisions/downloaders.py`
 contain code to extract the division ids returned from `/divisions`
-for use as inputs for the HoC's `/division/{id}` endpoint.   
+for use as path variables provided to the HoC's `/division/{id}` endpoint.   
 
 To reduce the Lambda's execution time, each division's voting data is downloaded in parallel.
 
@@ -49,7 +47,7 @@ the K-modes algorithm.
 
 ### K-Modes lambda
 
-The K-Modes app is written in Scala and deployed as a Lambda. Instead of 
+The K-modes app is written in Scala and deployed as a Lambda. Instead of 
 running on a schedule, it is triggered each time the downloader lambda sends
 a message to a shared SQS.
 
@@ -59,7 +57,7 @@ data makes it difficult to represent numerically (should a 'No Attend' be closer
 than a 'Yes' is?), so the standard Euclidean distance approach is unhelpful.
 
 The Lambda starts by fetching and parsing the DynamoDB voting data, then randomly
-selects K mps as the centroids.
+selects K MPs as the centroids.
 
 Each MP is then checked to see how much he or she 'agrees' with a centroid
 by comparing the votes cast for each division. If the votes differ, the
@@ -124,7 +122,9 @@ stable between iterations.
 Once the clustering process is finished, the results are converted to JSON and 
 pushed to an S3 bucket.  
 
-### Example (truncated to six MPs per cluster) output
+The current version of the application uses a fixed K value.
+
+### Example (truncated to six MPs per cluster) output with K = 5
 ```json
 {
     "Clusters": {
