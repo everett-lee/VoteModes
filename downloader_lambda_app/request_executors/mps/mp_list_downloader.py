@@ -18,7 +18,7 @@ def get_fields_of_interest(mp: dict) -> dict:
 
 def download_active_mp_list_to_file() -> None:
     """
-    Downloads MPs (from older XML-first endpoint) to file.
+    Downloads MPs to file.
     The resulting file is added to the database manually, as this data is
     treated as static until the next election.
     """
@@ -27,16 +27,13 @@ def download_active_mp_list_to_file() -> None:
     headers = {'content-type': 'application/json'}
     mp_results = requests.get(full_url, headers=headers)
 
-    with open('raw/temp', 'w') as f:
-        f.write(mp_results.text)
+    with open('raw/rawMPList', 'w') as f:
+        parsed = (mp_results.json())
+        print(parsed)
 
-    with open('raw/temp', 'r', encoding='utf-8-sig') as f:
-        parsed_json = json.load(f)
+        all_members = parsed['Members']['Member']
+        members_with_id_and_name = [get_fields_of_interest(mp) for mp in all_members]
 
-    all_members = parsed_json['Members']['Member']
-    members_with_id_and_name = [get_fields_of_interest(mp) for mp in all_members]
-
-    with open('raw/rawMPList', 'w') as raw_json:
-        raw_json.write('{"Data": ')
-        raw_json.write(json.dumps(members_with_id_and_name))
-        raw_json.write('}')
+        f.write('{"Data": ')
+        f.write(json.dumps(members_with_id_and_name))
+        f.write('}')
