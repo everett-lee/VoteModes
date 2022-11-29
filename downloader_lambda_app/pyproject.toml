@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "downloader_lambda"
+version = "0.1.0"
+description = ""
+authors = ["Lee <lee.m.everett@gmail.com>"]
+readme = "README.md"
+packages = [{include = "vote_modes"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+boto3 = "1.17.67"
+requests = "2.25.1"
+python-dateutil = "2.8.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+black = "^22.10.0"
+isort = "^5.10.1"
+moto = "^4.0.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
