@@ -1,8 +1,8 @@
 import json
 from unittest import TestCase, mock
 
-from data_loader import get_divisions_with_votes_first
-from mock_response_helper.mock_response_helper import get_mock_response
+from test.data_loader import get_divisions_with_votes_first
+from test.helpers.mock_response_helper import get_mock_response
 
 from request_executors.votes_per_divisions.downloaders import (
     download_division_with_vote, get_division_with_votes)
