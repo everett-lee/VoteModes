@@ -8,7 +8,7 @@ import requests
 
 from ..divisions.division import Division
 from .division_with_votes import DivisionWithVotes
-from .multithreaded.time_it import timeit
+from .timer.time_it import timeit
 
 URL_GET_DIVISION = "https://commonsvotes-api.parliament.uk/data/division/"
 
@@ -19,7 +19,7 @@ def get_division_with_votes(division: Dict, mp_ids: Set[int]) -> DivisionWithVot
     no_attend = mp_ids.difference(ayes.union(noes))
 
     return DivisionWithVotes(
-        division_id=division["DivisionId"],
+        division_id=int(division["DivisionId"]),
         ayes=list(ayes),
         noes=list(noes),
         no_attends=list(no_attend),
@@ -29,15 +29,14 @@ def get_division_with_votes(division: Dict, mp_ids: Set[int]) -> DivisionWithVot
 def download_division_with_vote(
     division_id: int, mp_ids: Set[int]
 ) -> DivisionWithVotes:
-    url = "{base_url}{division_id}.json".format(
-        base_url=URL_GET_DIVISION, division_id=division_id
-    )
-    failed_count = 0
+    url = f"{URL_GET_DIVISION}{division_id}.json"
 
+    failed_count = 0
     logging.info("downloading division with id %s", division_id)
 
     res = requests.get(url)
     while failed_count <= 10 and res.status_code != 200:
+        logging.info(f"Retrying fetch of Division wth id {division_id}")
         failed_count += 1
         res = requests.get(url)
 

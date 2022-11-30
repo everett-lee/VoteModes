@@ -1,12 +1,10 @@
+from dataclasses import dataclass
+from typing import List
+
+
+@dataclass
 class DivisionWithVotes:
-    def __init__(
-        self,
-        division_id,
-        ayes,
-        noes,
-        no_attends,
-    ):
-        self.division_id = int(division_id)
-        self.ayes = ayes
-        self.noes = noes
-        self.no_attends = no_attends
+    division_id: int
+    ayes: List[int]
+    noes: List[int]
+    no_attends: List[int]

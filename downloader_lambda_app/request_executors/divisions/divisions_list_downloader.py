@@ -1,5 +1,4 @@
 import logging
-import sys
 from typing import List
 
 from ..boto3_helpers.client_wrapper import get_table
@@ -19,7 +18,6 @@ def download_divisions_list(
     table = get_table(TABLE_NAME)
 
     for division in divisions:
-
         res = table.put_item(
             Item={
                 "DivisionElectionYear": election_year,

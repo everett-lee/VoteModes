@@ -20,9 +20,16 @@ def create_division(div: dict, saved_dates: set) -> Division:
 
 
 def get_divisions(intervals: MonthWithIntervals) -> List[Division]:
+    """
+    :param intervals: the three intervals of the month (with start and end date) to query
+    :return: a list of Divisions
+    """
+
     def make_requests() -> List[Division]:
         downloaded_divisions = []
-        saved_dates = set()
+        saved_dates = (
+            set()
+        )  # a store of datetimes used to find and increment duplicates
         for interval in intervals.get_interval_list:
             params = {
                 "queryParameters.startDate": interval.open,

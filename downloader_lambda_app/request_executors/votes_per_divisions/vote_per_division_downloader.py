@@ -1,16 +1,16 @@
 import logging
 from collections import defaultdict
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Union
 
 from boto3.dynamodb.conditions import Key
+from mypy_boto3_dynamodb.service_resource import Table
 
 from ..boto3_helpers.client_wrapper import get_table
 from ..divisions.division import Division
 from .division_with_votes import DivisionWithVotes
 from .downloaders import download_all_divisions_with_votes_async
 
-TOTAL_MPS = 650
-VoteIdToVoteMap = Dict[int, str]
+VoteIdToVoteMap = Dict[str, Union[str, int]]
 MPIdToVotesMap = Dict[int, VoteIdToVoteMap]
 
 
@@ -19,7 +19,7 @@ def map_divisions_with_votes_to_mps(
 ) -> MPIdToVotesMap:
     """
     Takes a list of DivisionWithVotes and a set of MP ids.
-    Returns a dict of MP ids mapped to a dict of each division id and the MP's
+    Returns a dict of MP ids mapped to a dict of each division ID and the MP's
     vote for that division
     """
 
@@ -38,13 +38,13 @@ def map_divisions_with_votes_to_mps(
     return {id: votes for id, votes in mps_to_votes.items() if id in mp_ids}
 
 
-def get_mp_ids(mps_table: object) -> Set[int]:
+def get_mp_ids(mps_table: Table, election_year: int) -> Set[int]:
     """
-    Gets all MP ids stored in the database
+    Gets all MP ids stored in the DynamoDB
     """
 
     mp_ids_request = mps_table.query(
-        KeyConditionExpression=Key("MPElectionYear").eq(2019),
+        KeyConditionExpression=Key("MPElectionYear").eq(election_year),
         ProjectionExpression="MemberId",
     )
     items = mp_ids_request["Items"]
@@ -54,7 +54,7 @@ def get_mp_ids(mps_table: object) -> Set[int]:
             logging.error("Failure when fetching MP ids")
 
         mp_ids_request = mps_table.query(
-            KeyConditionExpression=Key("MPElectionYear").eq(2019),
+            KeyConditionExpression=Key("MPElectionYear").eq(election_year),
             ProjectionExpression="MemberId",
             ExclusiveStartKey=mp_ids_request["LastEvaluatedKey"],
         )
@@ -63,18 +63,19 @@ def get_mp_ids(mps_table: object) -> Set[int]:
     return {int(item["MemberId"]) for item in items}
 
 
-def set_votes(mps_to_votes: MPIdToVotesMap, mps_table: object) -> None:
+def set_votes(mps_to_votes: MPIdToVotesMap, election_year: int, mps_table: Table) -> None:
     """
-    Takes dict mapping each MP id to the corresponding votes. These votes (mappings from
-    divisionId -> Aye/No/NoAttend) are iterated over, already-processed vote ids
+    Takes dict mapping each MP ID to the corresponding votes. These votes (mappings from
+    divisionId -> Aye/No/NoAttend) are iterated over, already-processed vote IDs
     are removed, and the list of votes for each MP is updated.
     """
 
     def get_duplicate_ids(mp_id: int, list_votes: List[VoteIdToVoteMap]) -> Set[int]:
+        "Find IDs for already processed votes"
         new_vote_ids = {int(vote["DivisionId"]) for vote in list_votes}
 
         existing_votes_request = mps_table.query(
-            KeyConditionExpression=Key("MPElectionYear").eq(2019)
+            KeyConditionExpression=Key("MPElectionYear").eq(election_year)
             & Key("MemberId").eq(mp_id),
             ProjectionExpression="Votes",
         )
@@ -97,8 +98,7 @@ def set_votes(mps_to_votes: MPIdToVotesMap, mps_table: object) -> None:
 
     for mp_id, votes in mps_to_votes.items():
         list_votes = [
-            {"DivisionId": str(div_id), "Vote": vote}
-            for (div_id, vote) in votes.items()
+            {"DivisionId": div_id, "Vote": vote} for (div_id, vote) in votes.items()
         ]
         duplicate_ids = get_duplicate_ids(mp_id, list_votes)
         filtered_list_votes = [
@@ -108,7 +108,7 @@ def set_votes(mps_to_votes: MPIdToVotesMap, mps_table: object) -> None:
         ]
 
         update_mp_votes_request = mps_table.update_item(
-            Key={"MPElectionYear": 2019, "MemberId": int(mp_id)},
+            Key={"MPElectionYear": election_year, "MemberId": int(mp_id)},
             UpdateExpression="SET Votes = list_append(Votes, :new_votes)",
             ExpressionAttributeValues={
                 ":new_votes": filtered_list_votes,
@@ -120,13 +120,18 @@ def set_votes(mps_to_votes: MPIdToVotesMap, mps_table: object) -> None:
             logging.error("failed to update votes for mp with id %s", mp_id)
 
 
-def download_votes_per_division(divisions: List[Division]) -> None:
+def download_votes_per_division(divisions: List[Division], election_year: int) -> None:
+    total_mps = 650 # not strictly true
+    good_attendance_percentage = 0.6
+
     def has_good_attendance(division: Division) -> bool:
-        return division.aye_count + division.no_count > (TOTAL_MPS * 0.6)
+        return division.aye_count + division.no_count > (
+            total_mps * good_attendance_percentage
+        )
 
     mps_table = get_table("MPs")
 
-    mp_ids = get_mp_ids(mps_table)
+    mp_ids = get_mp_ids(mps_table, election_year)
     with_good_attendance = [div for div in divisions if has_good_attendance(div)]
     divisions_with_votes = download_all_divisions_with_votes_async(
         with_good_attendance, mp_ids
@@ -135,4 +140,4 @@ def download_votes_per_division(divisions: List[Division]) -> None:
     assert len(with_good_attendance) == len(divisions_with_votes)
 
     mps_to_votes = map_divisions_with_votes_to_mps(divisions_with_votes, mp_ids)
-    set_votes(mps_to_votes, mps_table)
+    set_votes(mps_to_votes=mps_to_votes, mps_table=mps_table, election_year=election_year)
