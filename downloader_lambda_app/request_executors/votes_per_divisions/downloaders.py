@@ -2,7 +2,7 @@ import concurrent
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Optional, Set
 
 import requests
 
@@ -20,7 +20,7 @@ class VotesDownloader:
                 "https://commonsvotes-api.parliament.uk/data/division/"
             )
 
-    def get_division_with_votes(
+    def _get_division_with_votes(
         self, division: Dict, mp_ids: Set[int]
     ) -> DivisionWithVotes:
         ayes = {int(vote["MemberId"]) for vote in division["Ayes"]}
@@ -34,7 +34,7 @@ class VotesDownloader:
             no_attends=list(no_attend),
         )
 
-    def download_division_with_vote(
+    def _download_division_with_vote(
         self, division_id: int, mp_ids: Set[int]
     ) -> DivisionWithVotes:
         url = f"{self.votes_base_url}{division_id}.json"
@@ -56,7 +56,7 @@ class VotesDownloader:
             raise RuntimeError(error)
 
         json_dict = json.loads(res.text)
-        return self.get_division_with_votes(json_dict, mp_ids)
+        return self._get_division_with_votes(json_dict, mp_ids)
 
     @timeit
     def download_all_divisions_with_votes_sync(
@@ -65,7 +65,7 @@ class VotesDownloader:
 
         division_ids = [division.division_id for division in with_good_attendance]
         return [
-            self.download_division_with_vote(division_id, mp_ids)
+            self._download_division_with_vote(division_id, mp_ids)
             for division_id in division_ids
         ]
 
@@ -79,7 +79,7 @@ class VotesDownloader:
 
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [
-                executor.submit(self.download_division_with_vote, division_id, mp_ids)
+                executor.submit(self._download_division_with_vote, division_id, mp_ids)
                 for division_id in division_ids
             ]
 

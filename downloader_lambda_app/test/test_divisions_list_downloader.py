@@ -1,11 +1,10 @@
 from datetime import datetime
+from test.data_loader import get_divisions_first
+from test.helpers.mock_response_helper import get_mock_response
 from unittest import TestCase, mock
 
-from test.data_loader import get_divisions_first
-from request_executors.divisions.schemas import Division, MonthWithIntervals
-from test.helpers.mock_response_helper import get_mock_response
-
 from request_executors.divisions.downloaders import DivisionDownloader
+from request_executors.divisions.schemas import Division, MonthWithIntervals
 
 division_json = get_divisions_first()[0]
 division_downloader = DivisionDownloader()
