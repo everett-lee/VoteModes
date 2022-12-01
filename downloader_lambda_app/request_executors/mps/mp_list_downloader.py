@@ -2,6 +2,10 @@ import json
 
 import requests
 
+"""
+In the current set up MPs are both downloaded and put to the datastore manually using the script below.
+"""
+
 URL_GET_MPS_BASE = (
     "http://data.parliament.uk/membersdataplatform/services/mnis/members/"
 )

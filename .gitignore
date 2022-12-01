@@ -186,6 +186,7 @@ tfplan
 
 #Scripts
 *.sh
+runner.py
 
 #AWS
 aws-lambda-rie

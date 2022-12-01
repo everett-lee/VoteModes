@@ -2,13 +2,13 @@ from datetime import datetime
 from unittest import TestCase, mock
 
 from test.data_loader import get_divisions_first
-from request_executors.divisions.division import Division
-from request_executors.divisions.month_with_intervals import MonthWithIntervals
+from request_executors.divisions.schemas import Division, MonthWithIntervals
 from test.helpers.mock_response_helper import get_mock_response
 
-from request_executors.divisions.downloaders import get_divisions
+from request_executors.divisions.downloaders import DivisionDownloader
 
 division_json = get_divisions_first()[0]
+division_downloader = DivisionDownloader()
 
 
 class TestGetDateIntervals(TestCase):
@@ -59,7 +59,7 @@ class TestGetDateIntervals(TestCase):
         intervals = MonthWithIntervals(month=12, year=1999)
         mock_get.return_value = mock_response
         with self.assertRaises(RuntimeError):
-            get_divisions(intervals)
+            division_downloader._get_divisions(intervals)
 
     def test_increment_date_empty_set(self):
         division_json["Date"] = datetime(2021, 5, 17, 11, 59, 59).strftime(

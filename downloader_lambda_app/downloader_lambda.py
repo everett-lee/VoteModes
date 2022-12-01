@@ -4,8 +4,8 @@ import sys
 from datetime import date
 
 from request_executors.boto3_helpers.client_wrapper import get_queue
-from request_executors.divisions.divisions_list_downloader import (
-    download_divisions_list,
+from request_executors.divisions.downloaders import (
+    DivisionDownloader,
 )
 from request_executors.votes_per_divisions.vote_per_division_downloader import (
     download_votes_per_division,
@@ -25,7 +25,8 @@ def handler(event, context):
     # get data for previous month
     month = today.month - 1
 
-    divisions = download_divisions_list(
+    divisions_downloader = DivisionDownloader(dynamo_table_name="Divisions")
+    divisions = divisions_downloader.download_divisions_list(
         year=year, month=month, election_year=election_year
     )
     download_votes_per_division(divisions=divisions, election_year=election_year)

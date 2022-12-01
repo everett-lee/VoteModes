@@ -6,8 +6,8 @@ from boto3.dynamodb.conditions import Key
 from mypy_boto3_dynamodb.service_resource import Table
 
 from ..boto3_helpers.client_wrapper import get_table
-from ..divisions.division import Division
-from .division_with_votes import DivisionWithVotes
+from ..divisions.schemas import Division
+from .schemas import DivisionWithVotes
 from .downloaders import download_all_divisions_with_votes_async
 
 VoteIdToVoteMap = Dict[str, Union[str, int]]
@@ -63,7 +63,9 @@ def get_mp_ids(mps_table: Table, election_year: int) -> Set[int]:
     return {int(item["MemberId"]) for item in items}
 
 
-def set_votes(mps_to_votes: MPIdToVotesMap, election_year: int, mps_table: Table) -> None:
+def set_votes(
+    mps_to_votes: MPIdToVotesMap, election_year: int, mps_table: Table
+) -> None:
     """
     Takes dict mapping each MP ID to the corresponding votes. These votes (mappings from
     divisionId -> Aye/No/NoAttend) are iterated over, already-processed vote IDs
@@ -121,7 +123,7 @@ def set_votes(mps_to_votes: MPIdToVotesMap, election_year: int, mps_table: Table
 
 
 def download_votes_per_division(divisions: List[Division], election_year: int) -> None:
-    total_mps = 650 # not strictly true
+    total_mps = 650  # not strictly true
     good_attendance_percentage = 0.6
 
     def has_good_attendance(division: Division) -> bool:
@@ -140,4 +142,6 @@ def download_votes_per_division(divisions: List[Division], election_year: int) -
     assert len(with_good_attendance) == len(divisions_with_votes)
 
     mps_to_votes = map_divisions_with_votes_to_mps(divisions_with_votes, mp_ids)
-    set_votes(mps_to_votes=mps_to_votes, mps_table=mps_table, election_year=election_year)
+    set_votes(
+        mps_to_votes=mps_to_votes, mps_table=mps_table, election_year=election_year
+    )
