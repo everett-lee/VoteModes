@@ -32,7 +32,6 @@ class KModesMain(centroidsHelper: CentroidsHelper[Vector[MPWithVotes], List[Vote
       (centroidIndex, mpsWithVotes) <- groupedByCentroid
     } yield centroidsHelper.calculateCentroid(mpsWithVotes, centroidIndex)).toVector
     logger.info("New centroids: {}", newCentroids)
-
     looper(inMps, newCentroids, iteration + 1)
   }
 

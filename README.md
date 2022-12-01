@@ -35,7 +35,7 @@ only the total for and against counts. As such,
 contain code to extract the division ids returned from `/divisions`
 for use as path variables provided to the HoC's `/division/{id}` endpoint.   
 
-To reduce the Lambda's execution time, each division's voting data is downloaded in parallel.
+To reduce the Lambda's execution time, each division's voting data is downloaded async.
 
 The resulting data for each MP is then extracted and used to update a 
 DynamoDB table containing data for each MP. This data is initialised manually using the (simplifying but wrong) 
