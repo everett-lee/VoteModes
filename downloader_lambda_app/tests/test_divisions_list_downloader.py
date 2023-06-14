@@ -1,6 +1,6 @@
 from datetime import datetime
-from test.data_loader import get_divisions_first
-from test.helpers.mock_response_helper import get_mock_response
+from tests.data_loader import get_divisions_first
+from tests.helpers.mock_response_helper import get_mock_response
 from unittest import TestCase, mock
 
 from request_executors.divisions.downloaders import DivisionDownloader

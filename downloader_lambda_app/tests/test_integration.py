@@ -1,12 +1,16 @@
 import json
 import os
 from datetime import date
-from test.data_loader import (get_divisions_first, get_divisions_second,
-                              get_divisions_third,
-                              get_divisions_with_votes_first,
-                              get_divisions_with_votes_second,
-                              get_divisions_with_votes_third, get_mps)
-from test.helpers.mock_response_helper import get_mock_response
+from tests.data_loader import (
+    get_divisions_first,
+    get_divisions_second,
+    get_divisions_third,
+    get_divisions_with_votes_first,
+    get_divisions_with_votes_second,
+    get_divisions_with_votes_third,
+    get_mps,
+)
+from tests.helpers.mock_response_helper import get_mock_response
 from unittest import TestCase, mock
 
 import boto3
