@@ -51,7 +51,7 @@ class DivisionDownloader:
                 res = requests.get(self.divisions_url, params)
 
                 if res.status_code != 200:
-                    error = f"failed to download interval: {interval}"
+                    error = f"failed to download interval: {interval}, status code {res.status_code}"
                     logging.error(error)
                     raise RuntimeError(error)
 
