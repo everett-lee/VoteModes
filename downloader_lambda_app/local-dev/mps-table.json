@@ -1,0 +1,12 @@
+{
+  "TableName": "MPs",
+  "KeySchema": [
+    {"AttributeName": "MPElectionYear", "KeyType": "HASH"},
+    {"AttributeName": "MemberId", "KeyType": "RANGE"}
+  ],
+  "AttributeDefinitions": [
+    {"AttributeName": "MPElectionYear", "AttributeType": "N"},
+    {"AttributeName": "MemberId", "AttributeType": "N"}
+  ],
+  "ProvisionedThroughput": {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
+}

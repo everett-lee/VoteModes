@@ -117,6 +117,10 @@ class VotesProcessor:
         if existing_votes_request["ResponseMetadata"]["HTTPStatusCode"] != 200:
             logging.error("Failed to validate votes for mp with id %s", mp_id)
         else:
+            if not existing_votes_request["Items"][0]:
+                # Case where no votes present
+                return set()
+
             existing_votes = existing_votes_request["Items"][0]["Votes"]
             existing_vote_ids = {int(vote["DivisionId"]) for vote in existing_votes}
 

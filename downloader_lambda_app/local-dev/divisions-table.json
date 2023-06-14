@@ -1,0 +1,27 @@
+{
+    "TableName": "Divisions",
+    "KeySchema": [
+        {
+            "AttributeName": "DivisionElectionYear",
+            "KeyType": "HASH"
+        },
+        {
+            "AttributeName": "DivisionDate",
+            "KeyType": "RANGE"
+        }
+    ],
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "DivisionElectionYear",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "DivisionDate",
+            "AttributeType": "S"
+        }
+    ],
+    "ProvisionedThroughput": {
+        "ReadCapacityUnits": 5,
+        "WriteCapacityUnits": 5
+    }
+}
