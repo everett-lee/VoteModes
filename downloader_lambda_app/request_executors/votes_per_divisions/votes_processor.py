@@ -15,9 +15,9 @@ MPIdToVotesMap = Dict[int, VoteIdToVoteMap]
 
 
 class VotesProcessor:
-    def __init__(self, votes_downloader: VotesDownloader, mps_table_name: str = "MPs"):
+    def __init__(self, votes_downloader: VotesDownloader, mps_table: Table):
         self.votes_downloader = votes_downloader
-        self.mps_table = get_table(mps_table_name)
+        self.mps_table = mps_table
 
     def download_votes_per_division(
         self, divisions: List[Division], election_year: int
@@ -117,6 +117,10 @@ class VotesProcessor:
         if existing_votes_request["ResponseMetadata"]["HTTPStatusCode"] != 200:
             logging.error("Failed to validate votes for mp with id %s", mp_id)
         else:
+            if not existing_votes_request["Items"][0]:
+                # Case where no votes present
+                return set()
+
             existing_votes = existing_votes_request["Items"][0]["Votes"]
             existing_vote_ids = {int(vote["DivisionId"]) for vote in existing_votes}
 

@@ -1,22 +1,18 @@
 import json
 import os
 from datetime import date
-from tests.data_loader import (
-    get_divisions_first,
-    get_divisions_second,
-    get_divisions_third,
-    get_divisions_with_votes_first,
-    get_divisions_with_votes_second,
-    get_divisions_with_votes_third,
-    get_mps,
-)
-from tests.helpers.mock_response_helper import get_mock_response
 from unittest import TestCase, mock
 
 import boto3
 from moto import mock_dynamodb, mock_sqs
 
 from downloader_lambda import handler
+from tests.data_loader import (get_divisions_first, get_divisions_second,
+                               get_divisions_third,
+                               get_divisions_with_votes_first,
+                               get_divisions_with_votes_second,
+                               get_divisions_with_votes_third, get_mps)
+from tests.helpers.mock_response_helper import get_mock_response
 
 
 @mock.patch.dict(os.environ, {"AWS_PROFILE": "moto", "ELECTION_YEAR": "2019"})
@@ -30,11 +26,15 @@ class IntegrationTests(TestCase):
         self.assertEqual(os.getenv("AWS_PROFILE"), "moto")
 
     @mock.patch("requests.get")
-    def test_full_process(self, mock_get):
+    @mock.patch("request_executors.boto3_helpers.client_wrapper.get_table")
+    def test_full_process(self, mock_table_factory, mock_get):
         self.assert_using_moto()
         [divisions_table, mps_table] = self.set_up_tables()
         queue = self.set_up_sqs()
+
         self.set_mock_responses(mock_get)
+        # return tables in order they are created in handler
+        mock_table_factory.side_effects = [divisions_table, mps_table]
 
         handler(None, None)
 
