@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Dict, Set
 
 import dateutil.parser
 
@@ -6,18 +7,18 @@ import dateutil.parser
 class Division:
     """Represents a Parliamentary Division (vote)"""
 
-    def __init__(self, division: dict, saved_dates: set):
+    def __init__(self, division: Dict[str, any], saved_dates: Set[str]):
         """
         :param division: Parsed Dict of JSON representation of a Division
         :param saved_dates: A maintained set of dates seen so far. Used to remove duplicates
         """
-        self.date = self.increment_date(division["Date"].strip(), saved_dates)
+        self.date = self._decrement_date(division["Date"].strip(), saved_dates)
         self.division_id = division["DivisionId"]
         self.title = division["Title"].strip()
         self.aye_count = division["AyeCount"]
         self.no_count = division["NoCount"]
 
-    def increment_date(self, old_date: str, saved_dates: set) -> str:
+    def _decrement_date(self, old_date: str, saved_dates: Set[str]) -> str:
         """
         Division datetime is used as a range key in the database. The time portion
         sometimes gets defaulted to midnight in the source data, resulting in duplicate keys.
@@ -28,9 +29,9 @@ class Division:
             return old_date
 
         old_date_str = dateutil.parser.parse(old_date)
-        incremented_date = old_date_str + timedelta(seconds=1)
-        return self.increment_date(
-            incremented_date.strftime("%Y-%m-%dT%H:%M:%S%z"), saved_dates
+        decremented_date = old_date_str - timedelta(seconds=1)
+        return self._decrement_date(
+            decremented_date.strftime("%Y-%m-%dT%H:%M:%S%z"), saved_dates
         )
 
     def __repr__(self):

@@ -1,13 +1,15 @@
 from datetime import datetime
-from tests.data_loader import get_divisions_first
-from tests.helpers.mock_response_helper import get_mock_response
 from unittest import TestCase, mock
+from unittest.mock import Mock
 
 from request_executors.divisions.downloaders import DivisionDownloader
 from request_executors.divisions.schemas import Division, MonthWithIntervals
+from tests.data_loader import get_divisions_first
+from tests.helpers.mock_response_helper import get_mock_response
 
 division_json = get_divisions_first()[0]
-division_downloader = DivisionDownloader()
+table = Mock()  # can be mocked as not called
+division_downloader = DivisionDownloader(table)
 
 
 class TestGetDateIntervals(TestCase):
@@ -73,7 +75,7 @@ class TestGetDateIntervals(TestCase):
         )
         saved = {"2021-05-17T11:59:59"}
         division = Division(division_json, saved)
-        self.assertEqual(division.date, "2021-05-17T12:00:00")
+        self.assertEqual(division.date, "2021-05-17T11:59:58")
 
     def test_increment_date_two_date_clashes(self):
         division_json["Date"] = datetime(2021, 5, 17, 11, 59, 59).strftime(
@@ -81,7 +83,7 @@ class TestGetDateIntervals(TestCase):
         )
         saved = {"2021-05-17T11:59:59", "2021-05-17T12:00:00"}
         division = Division(division_json, saved)
-        self.assertEqual(division.date, "2021-05-17T12:00:01")
+        self.assertEqual(division.date, "2021-05-17T11:59:58")
 
     def test_increment_date_one_date_clash_one_unrelated(self):
         division_json["Date"] = datetime(2021, 5, 17, 11, 59, 59).strftime(
@@ -89,4 +91,4 @@ class TestGetDateIntervals(TestCase):
         )
         saved = {"2021-05-17T11:59:59", "2021-06-17T12:20:00"}
         division = Division(division_json, saved)
-        self.assertEqual(division.date, "2021-05-17T12:00:00")
+        self.assertEqual(division.date, "2021-05-17T11:59:58")

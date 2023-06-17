@@ -15,9 +15,9 @@ MPIdToVotesMap = Dict[int, VoteIdToVoteMap]
 
 
 class VotesProcessor:
-    def __init__(self, votes_downloader: VotesDownloader, mps_table_name: str = "MPs"):
+    def __init__(self, votes_downloader: VotesDownloader, mps_table: Table):
         self.votes_downloader = votes_downloader
-        self.mps_table = get_table(mps_table_name)
+        self.mps_table = mps_table
 
     def download_votes_per_division(
         self, divisions: List[Division], election_year: int

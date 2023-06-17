@@ -1,7 +1,8 @@
 import json
+import logging
 import os
 import sys
-import logging
+from typing import Any, Dict, Union
 
 import requests
 
@@ -20,7 +21,8 @@ START_DATE = "2019-12-15"
 END_DATE = "2021-05-03"
 MP_ELECTION_YEAR = os.getenv("ELECTION_YEAR", "2019")
 
-def get_fields_of_interest(mp: dict) -> dict:
+
+def get_fields_of_interest(mp: Dict[str, Any]) -> Dict[str, Union[int, str]]:
     return {
         "MemberId": int(mp["@Member_Id"]),
         "Name": mp["DisplayAs"],
@@ -28,7 +30,9 @@ def get_fields_of_interest(mp: dict) -> dict:
     }
 
 
-def download_active_mp_list_to_file(start_date: str = START_DATE, end_date: str = END_DATE) -> None:
+def download_active_mp_list_to_file(
+    start_date: str = START_DATE, end_date: str = END_DATE
+) -> None:
     """
     Downloads MPs to file.
     The resulting file is added to the database manually, as this data is

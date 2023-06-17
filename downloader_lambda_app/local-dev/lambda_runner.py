@@ -1,6 +1,7 @@
+import logging
 import os
 import sys
-import logging
+
 from downloader_lambda import run
 
 logging.basicConfig(level=logging.INFO)
@@ -16,4 +17,3 @@ if __name__ == "__main__":
 
     else:
         logging.info("Provide year and month args")
-

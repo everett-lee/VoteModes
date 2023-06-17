@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Union
 
@@ -13,30 +14,36 @@ SQS_CLIENT = None
 
 def get_dynamodb_resource() -> Union[DynamoDBServiceResource, None]:
     global DYNAMO_DB_CLIENT
-    if os.getenv("ENV") == "local-dev":
-        DYNAMO_DB_CLIENT = boto3.resource("dynamodb", endpoint_url="http://localhost:8000")
-    else:
-        DYNAMO_DB_CLIENT = boto3.resource("dynamodb")
+    if not DYNAMO_DB_CLIENT:
+        logging.info("Creating DymamoDB client in local dev")
+        if os.getenv("ENV") == "local-dev":
+            DYNAMO_DB_CLIENT = boto3.resource(
+                "dynamodb", endpoint_url="http://localhost:8000"
+            )
+        else:
+            logging.info("Creating DynamoDB client")
+            DYNAMO_DB_CLIENT = boto3.resource("dynamodb")
 
     return DYNAMO_DB_CLIENT
 
 
 def get_sqs_client() -> Union[SQSServiceResource, None]:
     global SQS_CLIENT
-    SQS_CLIENT = boto3.resource("sqs")
+    if not SQS_CLIENT:
+        logging.info("Creating SQS client")
+        SQS_CLIENT = boto3.resource("sqs")
 
     return SQS_CLIENT
 
 
 def get_table(table_name: str) -> Table:
-    global DYNAMO_DB_CLIENT
-    dynamodb = DYNAMO_DB_CLIENT if DYNAMO_DB_CLIENT else get_dynamodb_resource()
+    dynamodb = get_dynamodb_resource()
 
+    logging.info(f"Creating resource for table {table_name}")
     return dynamodb.Table(table_name)
 
 
 def get_queue(queue_url: str) -> Queue:
-    global SQS_CLIENT
-    sqs = SQS_CLIENT if SQS_CLIENT else get_sqs_client()
+    sqs = get_sqs_client()
 
     return sqs.Queue(url=queue_url)
